@@ -670,7 +670,6 @@
 </div>
 
 <script>
-    // الرابط الجديد لـ Google Apps Script
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwIqJ0hC7xzs4I6--ocDyCHkwxwmVUk-Y0eOwYsTUCiP39MH2oetro_9ssGTniJOztRjw/exec';
     
     let currentUser = null;
@@ -680,10 +679,18 @@
     let allGroups = [];
     let allFloors = [];
     let allDepartments = [];
-    let currentView = 'weekly';
-    let calendar = null;
-    
-    // Toast Notification
+
+    const daysOfWeek = ['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday'];
+    const daysNames = { Saturday:'السبت', Sunday:'الأحد', Monday:'الاثنين', Tuesday:'الثلاثاء', Wednesday:'الأربعاء', Thursday:'الخميس' };
+
+    // Time slots 9 AM to 10 PM
+    const timeSlots = [];
+    for (let i = 9; i <= 22; i++) {
+        const suffix = i >= 12 ? 'م' : 'ص';
+        const h12 = i > 12 ? i - 12 : i;
+        timeSlots.push({ time24: `${String(i).padStart(2,'0')}:00`, display: `${h12}:00 ${suffix}` });
+    }
+
     function showToast(message, type = 'info') {
         const container = document.getElementById('toastContainer');
         const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
@@ -694,7 +701,12 @@
         setTimeout(() => toast.remove(), 4000);
     }
 
-    // Centralized API Call
+    function showLoading(show) {
+        const overlay = document.getElementById('loadingOverlay');
+        if (show) overlay.classList.add('show');
+        else overlay.classList.remove('show');
+    }
+
     async function apiCall(action, data = {}) {
         try {
             const response = await fetch(SCRIPT_URL, {
@@ -703,96 +715,35 @@
                 body: JSON.stringify({ action, ...data })
             });
             const result = await response.json();
-            if (result.success === false) {
-                throw new Error(result.message || 'حدث خطأ غير معروف');
-            }
+            if (result.success === false) throw new Error(result.message || 'خطأ');
             return result.data !== undefined ? result.data : result;
         } catch (error) {
-            if (error.message && !error.message.includes('fetch')) {
-                showToast(error.message, 'error');
-            } else {
-                showToast('حدث خطأ في الاتصال بالخادم', 'error');
-            }
+            showToast(error.message || 'خطأ في الاتصال', 'error');
             throw error;
         }
     }
 
-    // Form Validation
-    const Validators = {
-        required: (val) => val !== null && val !== undefined && String(val).trim() !== '',
-    };
-
-    function validateForm(rules) {
-        let isValid = true;
-        for (const [fieldId, checks] of Object.entries(rules)) {
-            const el = document.getElementById(fieldId);
-            if (!el) continue;
-            const val = el.value;
-            let fieldValid = true;
-            for (const check of checks) {
-                if (!check.fn(val)) {
-                    fieldValid = false;
-                    el.style.borderColor = 'var(--danger)';
-                    let errEl = el.parentElement.querySelector('.field-error');
-                    if (!errEl) {
-                        errEl = document.createElement('div');
-                        errEl.className = 'field-error';
-                        errEl.style.cssText = 'color: var(--danger); font-size: 11px; margin-top: 4px;';
-                        el.parentElement.appendChild(errEl);
-                    }
-                    errEl.textContent = check.msg;
-                    isValid = false;
-                    break;
-                }
-            }
-            if (fieldValid) {
-                el.style.borderColor = '#e9ecef';
-                const errEl = el.parentElement.querySelector('.field-error');
-                if (errEl) errEl.remove();
-            }
-        }
-        return isValid;
-    }
-
-    const daysOfWeek = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-    const daysNames = { Saturday: 'السبت', Sunday: 'الأحد', Monday: 'الاثنين', Tuesday: 'الثلاثاء', Wednesday: 'الأربعاء', Thursday: 'الخميس', Friday: 'الجمعة' };
-
     document.addEventListener('DOMContentLoaded', function() {
         const userStr = sessionStorage.getItem('loggedInUser');
         if (!userStr) { window.location.href = 'index.html'; return; }
+        try { currentUser = JSON.parse(userStr); } catch(e) { window.location.href = 'index.html'; return; }
         
-        try {
-            currentUser = JSON.parse(userStr);
-        } catch(e) {
-            sessionStorage.removeItem('loggedInUser');
-            window.location.href = 'index.html';
-            return;
-        }
-        
-        updateUserUI();
-        setupEventListeners();
-        loadData();
-    });
-
-    function updateUserUI() {
         document.getElementById('userName').textContent = currentUser.fullName || currentUser.username;
-        const roleNames = {1: 'مدير النظام', 2: 'محاسب', 3: 'مدير دور', 4: 'مسؤول حجوزات', 5: 'مشاهد'};
+        const roleNames = {1:'مدير النظام',2:'محاسب',3:'مدير دور',4:'مسؤول حجوزات',5:'مشاهد'};
         document.getElementById('userRole').textContent = roleNames[currentUser.roleId] || 'مستخدم';
-    }
 
-    function setupEventListeners() {
         document.getElementById('menuToggle').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
         document.getElementById('logoutBtn').addEventListener('click', () => { sessionStorage.removeItem('loggedInUser'); window.location.href = 'index.html'; });
-        
         document.getElementById('applyFilterBtn').addEventListener('click', () => renderBoard());
         document.getElementById('addBookingBtn').addEventListener('click', () => openAddModal());
         document.getElementById('closeModal').addEventListener('click', () => closeModal());
         document.getElementById('cancelModal').addEventListener('click', () => closeModal());
         document.getElementById('saveBooking').addEventListener('click', () => saveBooking());
         document.getElementById('deleteBookingBtn').addEventListener('click', () => deleteBooking());
-        
-        window.addEventListener('click', (e) => { if (e.target === document.getElementById('bookingModal')) closeModal(); });
-    }
+        window.addEventListener('click', e => { if(e.target === document.getElementById('bookingModal')) closeModal(); });
+
+        loadData();
+    });
 
     async function loadData() {
         showLoading(true);
@@ -812,124 +763,117 @@
             allFloors = fRes || [];
             allDepartments = dRes || [];
             
-            updateFilters();
+            populateFilters();
             renderBoard();
-        } catch(e) {}
+        } catch(e) { console.error(e); }
         showLoading(false);
     }
 
-    function updateFilters() {
-        
-        const hallFilter = document.getElementById('hallFilter').value;
-        const trainerFilter = document.getElementById('trainerFilter').value;
-        const deptFilter = document.getElementById('deptFilter').value;
-        const visibleFloors = getVisibleFloors();
-        
-        let filteredBookings = [...allBookings];
-        // Filter out bookings for floors user doesn't have access to
-        filteredBookings = filteredBookings.filter(b => {
-            const hall = allHalls.find(h => h.id == b.hallId);
-            return hall && visibleFloors.some(f => f.id == hall.floorNumber);
-        });
-        
-        if (hallFilter !== 'all') filteredBookings = filteredBookings.filter(b => b.hallId == hallFilter);
-        if (trainerFilter !== 'all') filteredBookings = filteredBookings.filter(b => b.trainerId == trainerFilter);
-        if (deptFilter !== 'all') {
-            filteredBookings = filteredBookings.filter(b => {
-                const trainer = allTrainers.find(t => t.id == b.trainerId);
-                return trainer && trainer.department == deptFilter;
-            });
+    function populateFilters() {
+        const hallFilter = document.getElementById('hallFilter');
+        const trainerFilter = document.getElementById('trainerFilter');
+        const floorFilter = document.getElementById('floorFilter');
+        const deptFilter = document.getElementById('deptFilter');
+        const hallSelect = document.getElementById('hallId');
+        const trainerSelect = document.getElementById('trainerId');
+        const groupSelect = document.getElementById('groupId');
+
+        hallFilter.innerHTML = '<option value="all">كل القاعات</option>';
+        allHalls.forEach(h => hallFilter.innerHTML += `<option value="${h.id}">${h.name}</option>`);
+
+        trainerFilter.innerHTML = '<option value="all">كل المدربين</option>';
+        allTrainers.forEach(t => trainerFilter.innerHTML += `<option value="${t.id}">${t.name}</option>`);
+
+        if (floorFilter) {
+            floorFilter.innerHTML = '<option value="all">كل الأدوار</option>';
+            allFloors.forEach(f => floorFilter.innerHTML += `<option value="${f.id}">${f.name}</option>`);
+        }
+        if (deptFilter) {
+            deptFilter.innerHTML = '<option value="all">كل الأقسام</option>';
+            allDepartments.forEach(d => deptFilter.innerHTML += `<option value="${d.id}">${d.name}</option>`);
         }
 
-        
+        hallSelect.innerHTML = '<option value="">اختر القاعة...</option>';
+        allHalls.forEach(h => hallSelect.innerHTML += `<option value="${h.id}">${h.name}</option>`);
+
+        trainerSelect.innerHTML = '<option value="">اختر المدرب...</option>';
+        allTrainers.forEach(t => trainerSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`);
+
+        groupSelect.innerHTML = '<option value="">بدون جروب</option>';
+        allGroups.forEach(g => groupSelect.innerHTML += `<option value="${g.id}">${g.name}</option>`);
+    }
+
+    function renderBoard() {
+        const hallFilter = document.getElementById('hallFilter').value;
+        const trainerFilter = document.getElementById('trainerFilter').value;
+
+        let filteredBookings = [...allBookings];
+        if (hallFilter !== 'all') filteredBookings = filteredBookings.filter(b => b.hallId == hallFilter);
+        if (trainerFilter !== 'all') filteredBookings = filteredBookings.filter(b => b.trainerId == trainerFilter);
+
         const header = document.getElementById('boardHeader');
         const body = document.getElementById('boardBody');
-        
-        // Render Header (Time Slots)
-        let headerHtml = `<tr>
-            <th style="padding: 15px; background: var(--dark-blue); color: white; border: 1px solid #dee2e6; width: 120px; position: sticky; right: 0; z-index: 10;">اليوم / المواعيد</th>
-        `;
-        for (let slot of timeSlots) {
-            let time = slot.time24; // Use 24h for logic, display 12h
-            let displayTime = slot.displayTime;
-            headerHtml += `<th style="padding: 10px; background: var(--dark-blue); color: white; border: 1px solid #dee2e6; text-align: center; min-width: 150px;">${displayTime}</th>`;
+
+        let headerHtml = '<tr><th style="padding:15px;background:var(--dark-blue);color:white;border:1px solid #dee2e6;width:120px;position:sticky;right:0;z-index:10;">اليوم / الوقت</th>';
+        for (const slot of timeSlots) {
+            headerHtml += `<th style="padding:10px;background:var(--dark-blue);color:white;border:1px solid #dee2e6;text-align:center;min-width:150px;">${slot.display}</th>`;
         }
-        headerHtml += `</tr>`;
+        headerHtml += '</tr>';
         header.innerHTML = headerHtml;
-        
-        // Define floor colors
-        const floorColors = ['#e3f2fd', '#fce4ec', '#e8f5e9', '#fff3e0', '#f3e5f5'];
-        const floorBorderColors = ['#2196f3', '#e91e63', '#4caf50', '#ff9800', '#9c27b0'];
-        
-        // Render Body (Days)
+
+        const floorColors = ['#e3f2fd','#fce4ec','#e8f5e9','#fff3e0','#f3e5f5'];
+        const floorBorderColors = ['#2196f3','#e91e63','#4caf50','#ff9800','#9c27b0'];
+
         let bodyHtml = '';
-        for (let day of daysOfWeek) {
+        for (const day of daysOfWeek) {
             let rowHtml = `<tr>
-                <td style="padding: 15px; background: #f8f9fa; border: 1px solid #dee2e6; font-weight: bold; text-align: center; position: sticky; right: 0; z-index: 9; box-shadow: -2px 0 5px rgba(0,0,0,0.02);">
-                    <div style="font-size: 16px; color: var(--primary-blue);">${daysNames[day]}</div>
-                    <button onclick="openAddModalAtDay('${day}')" style="margin-top: 10px; background: transparent; border: 1px dashed #ccc; color: var(--gray); padding: 5px; width: 100%; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 11px;">
+                <td style="padding:15px;background:#f8f9fa;border:1px solid #dee2e6;font-weight:bold;text-align:center;position:sticky;right:0;z-index:9;">
+                    <div style="color:var(--primary-blue);font-size:15px;">${daysNames[day]}</div>
+                    <button onclick="openAddModalAtDay('${day}')" style="margin-top:8px;background:transparent;border:1px dashed #ccc;color:var(--gray);padding:4px;width:100%;border-radius:6px;cursor:pointer;font-size:11px;">
                         <i class="fas fa-plus"></i> إضافة
                     </button>
-                </td>
-            `;
+                </td>`;
             
-            for (let slot of timeSlots) {
-            let time = slot.time24; // Use 24h for logic, display 12h
-            let displayTime = slot.displayTime;
+            for (const slot of timeSlots) {
+                const time = slot.time24;
                 let cellContent = '';
-                
-                // For this [Day, Time], group by Floor
-                for (let i = 0; i < visibleFloors.length; i++) {
-                    let floor = visibleFloors[i];
-                    let floorColor = floorColors[i % floorColors.length];
-                    let borderColor = floorBorderColors[i % floorBorderColors.length];
-                    
-                    let floorBookings = filteredBookings.filter(b => {
+
+                for (let i = 0; i < allFloors.length; i++) {
+                    const floor = allFloors[i];
+                    const floorColor = floorColors[i % floorColors.length];
+                    const borderColor = floorBorderColors[i % floorBorderColors.length];
+
+                    const floorBookings = filteredBookings.filter(b => {
                         const hall = allHalls.find(h => h.id == b.hallId);
-                        // Simple time overlap check
-                        const hasDay = (b.days && b.days.includes(day)) || (b.day === day);
-                        return hasDay && hall && hall.floorNumber == floor.id && (b.startTime <= time && b.endTime > time);
+                        const bookingDays = b.days || (b.day ? [b.day] : []);
+                        return bookingDays.includes(day) && hall && hall.floorId == floor.id && b.startTime <= time && b.endTime > time;
                     });
-                    
+
                     if (floorBookings.length > 0) {
-                        cellContent += `<div style="background: ${floorColor}; border-right: 4px solid ${borderColor}; padding: 6px; margin-bottom: 6px; border-radius: 6px; font-size: 11px; color: var(--dark);">`;
-                        cellContent += `<div style="font-weight: bold; margin-bottom: 4px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 2px;">${floor.name}</div>`;
-                        
-                        for (let booking of floorBookings) {
-                            const trainer = allTrainers.find(t => t.id === booking.trainerId);
-                            const hall = allHalls.find(h => h.id === booking.hallId);
-                            const isConflict = booking.conflict === 'CONFLICT';
-                            const conflictAlert = isConflict ? `<i class="fas fa-exclamation-triangle" style="color: var(--danger);" title="تعارض"></i> ` : '';
-                            
-                            cellContent += `
-                                <div onclick="editBooking(${booking.id})" style="cursor: pointer; background: rgba(255,255,255,0.7); padding: 4px; margin-top: 4px; border-radius: 4px; transition: transform 0.1s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                                    <div style="font-weight: bold;">${conflictAlert}${booking.startTime} - ${booking.endTime}</div>
-                                    <div><i class="fas fa-door-open"></i> ${hall?.name || '-'}</div>
-                                    <div><i class="fas fa-user-tie"></i> ${trainer?.name || '-'}</div>
-                                </div>
-                            `;
+                        cellContent += `<div style="background:${floorColor};border-right:4px solid ${borderColor};padding:6px;margin-bottom:4px;border-radius:6px;font-size:11px;">
+                            <div style="font-weight:bold;margin-bottom:3px;">${floor.name}</div>`;
+                        for (const b of floorBookings) {
+                            const trainer = allTrainers.find(t => t.id == b.trainerId);
+                            const hall = allHalls.find(h => h.id == b.hallId);
+                            cellContent += `<div onclick="editBooking(${b.id})" style="cursor:pointer;background:rgba(255,255,255,0.7);padding:4px;margin-top:3px;border-radius:4px;">
+                                <div style="font-weight:bold;">${b.startTime} - ${b.endTime}</div>
+                                <div><i class="fas fa-door-open"></i> ${hall?.name||'-'}</div>
+                                <div><i class="fas fa-user-tie"></i> ${trainer?.name||'-'}</div>
+                            </div>`;
                         }
-                        cellContent += `</div>`;
+                        cellContent += '</div>';
                     }
                 }
-                
-                rowHtml += `<td style="padding: 10px; border: 1px solid #dee2e6; vertical-align: top; background: white; min-height: 100px;">${cellContent}</td>`;
+
+                rowHtml += `<td style="padding:8px;border:1px solid #dee2e6;vertical-align:top;background:white;min-height:80px;">${cellContent}</td>`;
             }
-            rowHtml += `</tr>`;
+            rowHtml += '</tr>';
             bodyHtml += rowHtml;
         }
         body.innerHTML = bodyHtml;
     }
-    
-    
-    function openAddModalAtDay(day) {
-        openAddModal();
-        let cb = document.querySelector(`input[name="bookingDays"][value="${day}"]`);
-        if (cb) cb.checked = true;
-    }
 
     function openAddModal() {
-        document.getElementById('bookingModal').classList.add('show');
         document.getElementById('modalTitle').textContent = 'حجز جديد';
         document.getElementById('bookingId').value = '';
         document.querySelectorAll('input[name="bookingDays"]').forEach(cb => cb.checked = false);
@@ -939,134 +883,87 @@
         document.getElementById('trainerId').value = '';
         document.getElementById('groupId').value = '';
         document.getElementById('deleteBookingBtn').style.display = 'none';
+        document.getElementById('bookingModal').classList.add('show');
     }
 
-
-    function openAddModalAtSlot(day, floorId) {
-        document.getElementById('modalTitle').textContent = 'حجز جديد';
-        document.getElementById('bookingForm').reset();
-        document.getElementById('bookingId').value = '';
-        document.querySelectorAll('input[name="bookingDays"]').forEach(cb => cb.checked = false);
-        let cb = document.querySelector(`input[name="bookingDays"][value="${day}"]`);
+    window.openAddModalAtDay = function(day) {
+        openAddModal();
+        const cb = document.querySelector(`input[name="bookingDays"][value="${day}"]`);
         if (cb) cb.checked = true;
-        
-        // Auto-select first hall in this floor
-        const floorHalls = allHalls.filter(h => h.floorNumber == floorId);
-        if (floorHalls.length > 0) {
-            document.getElementById('hallId').value = floorHalls[0].id;
-        }
-        
-        document.getElementById('deleteBookingBtn').style.display = 'none';
-        document.getElementById('bookingModal').classList.add('show');
-    }
-
-    function editBooking(id) {
-        const booking = allBookings.find(b => b.id == id);
-        if (!booking) return;
-        
-        document.getElementById('modalTitle').textContent = 'تعديل الحجز';
-        document.getElementById('bookingId').value = booking.id;
-        document.querySelectorAll('input[name="bookingDays"]').forEach(cb => cb.checked = false);
-        // If the booking has days array (new schema)
-        if (booking.days && Array.isArray(booking.days)) {
-            booking.days.forEach(d => {
-                let cb = document.querySelector(`input[name="bookingDays"][value="${d}"]`);
-                if (cb) cb.checked = true;
-            });
-        } else if (booking.day) {
-            // Old schema compatibility
-            let cb = document.querySelector(`input[name="bookingDays"][value="${booking.day}"]`);
-            if (cb) cb.checked = true;
-        }
-        document.getElementById('startTime').value = booking.startTime;
-        document.getElementById('endTime').value = booking.endTime;
-        document.getElementById('hallId').value = booking.hallId;
-        document.getElementById('trainerId').value = booking.trainerId;
-        document.getElementById('groupId').value = booking.groupId || '';
-        document.getElementById('deleteBookingBtn').style.display = 'block';
-        document.getElementById('bookingModal').classList.add('show');
-    }
+    };
 
     function closeModal() {
         document.getElementById('bookingModal').classList.remove('show');
     }
 
-    
+    window.editBooking = function(id) {
+        const b = allBookings.find(x => x.id == id);
+        if (!b) return;
+        document.getElementById('modalTitle').textContent = 'تعديل الحجز';
+        document.getElementById('bookingId').value = b.id;
+        document.querySelectorAll('input[name="bookingDays"]').forEach(cb => cb.checked = false);
+        const bookingDays = b.days || (b.day ? [b.day] : []);
+        bookingDays.forEach(d => {
+            const cb = document.querySelector(`input[name="bookingDays"][value="${d}"]`);
+            if (cb) cb.checked = true;
+        });
+        document.getElementById('startTime').value = b.startTime;
+        document.getElementById('endTime').value = b.endTime;
+        document.getElementById('hallId').value = b.hallId;
+        document.getElementById('trainerId').value = b.trainerId;
+        document.getElementById('groupId').value = b.groupId || '';
+        document.getElementById('deleteBookingBtn').style.display = 'block';
+        document.getElementById('bookingModal').classList.add('show');
+    };
+
     async function saveBooking() {
-        const id = document.getElementById('bookingId').value;
         const days = Array.from(document.querySelectorAll('input[name="bookingDays"]:checked')).map(cb => cb.value);
         const startTime = document.getElementById('startTime').value;
         const endTime = document.getElementById('endTime').value;
         const hallId = document.getElementById('hallId').value;
         const trainerId = document.getElementById('trainerId').value;
         const groupId = document.getElementById('groupId').value;
+        const id = document.getElementById('bookingId').value;
 
-        if (days.length === 0 || !startTime || !endTime || !hallId || !trainerId) {
-            showToast('الرجاء تعبئة جميع الحقول المطلوبة واختيار يوم واحد على الأقل', 'warning');
-            return;
-        }
+        if (!days.length) { showToast('يرجى اختيار يوم واحد على الأقل', 'warning'); return; }
+        if (!startTime || !endTime) { showToast('يرجى تحديد وقت البداية والنهاية', 'warning'); return; }
+        if (!hallId) { showToast('يرجى اختيار القاعة', 'warning'); return; }
+        if (!trainerId) { showToast('يرجى اختيار المدرب', 'warning'); return; }
+        if (startTime >= endTime) { showToast('وقت النهاية يجب أن يكون بعد وقت البداية', 'warning'); return; }
+
+        // Validate half-hour intervals
+        const [sm, em] = [startTime.split(':')[1], endTime.split(':')[1]];
+        if (sm !== '00' && sm !== '30') { showToast('يرجى اختيار الوقت بأنصاف الساعات فقط (مثال 10:00 أو 10:30)', 'warning'); return; }
+        if (em !== '00' && em !== '30') { showToast('يرجى اختيار الوقت بأنصاف الساعات فقط (مثال 10:00 أو 10:30)', 'warning'); return; }
+
+        const bookingData = { id: id || undefined, days, startTime, endTime, hallId, trainerId, groupId, createdBy: currentUser.id };
         
-        // 12-hour fix: we just rely on HTML5 time input which is inherently 24h behind the scenes but displays according to locale.
-        // Wait, the prompt says "12-hour time system (full/half-hour only)".
-        // Let's validate minutes are 00 or 30
-        const startMin = startTime.split(':')[1];
-        const endMin = endTime.split(':')[1];
-        if (startMin !== '00' && startMin !== '30') {
-            showToast('الرجاء اختيار الوقت بأنصاف الساعات فقط (مثال 10:00 أو 10:30)', 'warning');
-            return;
-        }
-        if (endMin !== '00' && endMin !== '30') {
-            showToast('الرجاء اختيار الوقت بأنصاف الساعات فقط (مثال 10:00 أو 10:30)', 'warning');
-            return;
-        }
-
-        const data = {
-            id: id || undefined,
-            days: days,
-            startTime,
-            endTime,
-            hallId,
-            trainerId,
-            groupId,
-            createdBy: currentUser.id
-        };
-
         showLoading(true);
-        const res = await apiCall('saveBooking', { bookingData: data });
-        if (res.success) {
-            showToast(res.message, 'success');
-            closeModal();
-            loadData();
-        } else {
-            showToast(res.message, 'error');
-        }
+        try {
+            const res = await apiCall('saveBooking', { bookingData });
+            if (res.success !== false) {
+                showToast(typeof res.message === 'string' ? res.message : 'تم الحفظ بنجاح', 'success');
+                closeModal();
+                loadData();
+            } else {
+                showToast(res.message || 'حدث خطأ', 'error');
+            }
+        } catch(e) {}
         showLoading(false);
     }
 
-
     async function deleteBooking() {
         const id = document.getElementById('bookingId').value;
-        if (!id) return;
-        if (confirm('هل أنت متأكد من حذف هذا الحجز؟')) {
-            showLoading(true);
-            try {
-                await apiCall('deleteBooking', { bookingId: id });
-                showToast('تم حذف الحجز بنجاح', 'success');
-                closeModal();
-                loadData();
-            } catch(e) {}
-            showLoading(false);
-        }
+        if (!id || !confirm('هل أنت متأكد من حذف هذا الحجز؟')) return;
+        showLoading(true);
+        try {
+            await apiCall('deleteBooking', { bookingId: id });
+            showToast('تم الحذف بنجاح', 'success');
+            closeModal();
+            loadData();
+        } catch(e) {}
+        showLoading(false);
     }
-
-    function showLoading(show) {
-        const overlay = document.getElementById('loadingOverlay');
-        if (show) overlay.classList.add('show');
-        else overlay.classList.remove('show');
-    }
-
-    window.editBooking = editBooking;
-    window.openAddModalAtSlot = openAddModalAtSlot;
 </script>
 
 <script src="sidebar.js"></script>
