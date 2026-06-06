@@ -935,6 +935,12 @@
         setTimeout(() => toast.remove(), 4000);
     }
 
+    function showLoading(show) {
+        const overlay = document.getElementById('loadingOverlay');
+        if (show) overlay.classList.add('show');
+        else overlay.classList.remove('show');
+    }
+
     async function apiCall(action, data = {}) {
         try {
             const response = await fetch(SCRIPT_URL, {
@@ -943,18 +949,12 @@
                 body: JSON.stringify({ action, ...data })
             });
             const result = await response.json();
-            if (result.success === false) throw new Error(result.message || 'حدث خطأ');
+            if (result.success === false) throw new Error(result.message || 'خطأ');
             return result.data !== undefined ? result.data : result;
         } catch (error) {
             showToast(error.message || 'خطأ في الاتصال', 'error');
             throw error;
         }
-    }
-
-    function showLoading(show) {
-        const overlay = document.getElementById('loadingOverlay');
-        if (show) overlay.classList.add('show');
-        else overlay.classList.remove('show');
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -1002,6 +1002,7 @@
             allFloors.forEach(f => {
                 floorSelect.innerHTML += `<option value="${f.id}">${f.name}</option>`;
             });
+            
             filterAndRender();
         } catch (error) {
             console.error('Error:', error);
@@ -1148,161 +1149,25 @@
             status: document.getElementById('hallStatus').value
         };
         showLoading(true);
-        if (res.success) {
+        try {
+            await apiCall('saveHall', { hallData: data });
+            showToast('تم الحفظ بنجاح', 'success');
             closeModal('hallModal');
             loadData();
-        } else alert(res.message);
+        } catch(e) {}
         showLoading(false);
-    }
+    };
 
-    async function deleteHall(id) {
-        if (!confirm('هل أنت متأكد من الحذف؟')) return;
-        showLoading(true);
-        const res = await apiCall('deleteHall', { id });
-        if (res.success) loadData();
-        else alert(res.message);
-        showLoading(false);
-    }
-
-        
-        renderTable(filtered);
-    }
-    
-    function searchusers() {
-        currentPage = 1;
-        filterAndRender();
-    }
-    
-    function renderTable(users) {
-        const tbody = document.getElementById('floorsTableBody');
-        
-        if (!users || users.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align: center;">لا توجد أدوار</td></tr>';
-            document.getElementById('pagination').innerHTML = '';
-            return;
-        }
-        
-        // Pagination
-        const totalPages = Math.ceil(users.length / rowsPerPage);
-        const start = (currentPage - 1) * rowsPerPage;
-        const paginated = users.slice(start, start + rowsPerPage);
-        
-        // Render rows
-        tbody.innerHTML = paginated.map(s => {
-            return `
-                <tr>
-                    <td><strong>${s.id || '-'}</strong></td>
-                    <td>${s.name || '-'}</td>
-                    <td class="action-buttons">
-                        <button class="btn-icon btn-edit" onclick="editFloor(${s.id})"><i class="fas fa-edit"></i></button>
-                        <button class="btn-icon btn-delete" onclick="deleteFloor(${s.id})"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-            `;
-        }).join('');
-        
-        // Render pagination
-        renderPagination(totalPages);
-    }
-    
-    function renderPagination(totalPages) {
-        const container = document.getElementById('pagination');
-        if (totalPages <= 1) {
-            container.innerHTML = '';
-            return;
-        }
-        
-        let html = '';
-        for (let i = 1; i <= totalPages; i++) {
-            html += `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
-        }
-        container.innerHTML = html;
-    }
-    
-    function goToPage(page) {
-        currentPage = page;
-        filterAndRender();
-    }
-    
-    function viewFloor(id) {
-        const user = allFloors.find(s => s.id == id);
-        if (user) {
-            const roleNames = {1: 'مدير النظام', 2: 'محاسب', 3: 'مدير دور', 4: 'مسؤول حجوزات', 5: 'مشاهد'};
-            const roleName = roleNames[user.roleId] || 'مستخدم';
-            showToast(`المستخدم: ${user.fullName} | الهاتف: ${user.phone || '-'} | الصلاحية: ${roleName} | الحالة: ${user.isActive ? 'نشط' : 'غير نشط'}`, 'info');
-        }
-    }
-    
-    function editFloor(id) {
-        const user = allFloors.find(s => s.id == id);
-        if (user) {
-            document.getElementById('modalTitle').textContent = 'تعديل الدور';
-            document.getElementById('userId').value = user.id;
-            document.getElementById('floorName').value = user.name || '';
-            document.getElementById('floorModal').classList.add('show');
-        }
-    }
-    
-    function openAddModal() {
-        document.getElementById('modalTitle').textContent = 'إضافة دور جديد';
-        document.getElementById('floorForm').reset();
-        document.getElementById('userId').value = '';
-        document.getElementById('floorModal').classList.add('show');
-    }
-    
-    function closeModal() {
-        document.getElementById('floorModal').classList.remove('show');
-    }
-    
-    async function saveFloor() {
-        const rules = {
-            floorName: [{ fn: Validators.required, msg: 'الاسم مطلوب' }]
-        };
-        
-        if (!validateForm(rules)) return;
-        
-        const userData = {
-            id: document.getElementById('userId').value || null,
-            name: document.getElementById('floorName').value
-        };
-        
+    window.confirmDeleteHall = async function(id) {
+        if (!confirm('هل أنت متأكد من حذف هذه القاعة؟')) return;
         showLoading(true);
         try {
-            await apiCall('saveFloor', { data: userData });
-            showToast('تم الحفظ بنجاح', 'success');
-            closeModal();
+            await apiCall('deleteHall', { id });
+            showToast('تم الحذف بنجاح', 'success');
             loadData();
-        } catch (error) {
-            // Error handled in apiCall
-        }
+        } catch(e) {}
         showLoading(false);
-    }
-    
-    async function deleteFloor(id) {
-        if (confirm('هل أنت متأكد من حذف هذا الدور؟')) {
-            showLoading(true);
-            try {
-                await apiCall('deleteFloor', { id: id });
-                showToast('تم الحذف بنجاح', 'success');
-                loadData();
-            } catch (error) {
-                // Error handled in apiCall
-            }
-            showLoading(false);
-        }
-    }
-    
-    function showLoading(show) {
-        const overlay = document.getElementById('loadingOverlay');
-        if (show) overlay.classList.add('show');
-        else overlay.classList.remove('show');
-    }
-    
-    // Make functions global for onclick
-    window.viewFloor = viewFloor;
-    window.editFloor = editFloor;
-    window.deleteFloor = deleteFloor;
-    window.goToPage = goToPage;
+    };
 </script>
 
 <script src="sidebar.js"></script>
