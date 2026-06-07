@@ -1267,11 +1267,9 @@
     }
     
     function viewStudent(id) {
-        const student = allStudents.find(s => s.id == id);
-        if (student) {
-            showToast(`الطالب: ${student.name} | الكود: ${student.code} | الهاتف: ${student.phone} | المدرسة: ${student.school || '-'} | العمر: ${student.age || '-'}`, 'info');
-        }
+        window.open(`student_profile.html?id=${id}`, '_blank');
     }
+
     
     function editStudent(id) {
         const student = allStudents.find(s => s.id == id);
