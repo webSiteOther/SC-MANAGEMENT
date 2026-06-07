@@ -786,7 +786,11 @@
             
             populateFilters();
             renderBoard();
-        } catch(e) { console.error(e); }
+        } catch(e) { 
+            console.error(e); 
+            showToast('خطأ أثناء التحميل: ' + e.message, 'error');
+            document.getElementById('boardBody').innerHTML = '<tr><td colspan="7" style="text-align:center;color:red;padding:20px;">حدث خطأ: ' + e.message + '<br><small>تأكد من عمل Deploy للـ Script الجديد.</small></td></tr>';
+        }
         showLoading(false);
     }
 
@@ -825,6 +829,15 @@
 
         groupSelect.innerHTML = '<option value="">بدون جروب</option>';
         allGroups.forEach(g => groupSelect.innerHTML += `<option value="${g.id}">${g.name}</option>`);
+    }
+
+        function normalizeTime(t) {
+        if (!t) return '00:00';
+        if (t.includes('T')) {
+            const d = new Date(t);
+            return String(d.getUTCHours()).padStart(2,'0') + ':' + String(d.getUTCMinutes()).padStart(2,'0');
+        }
+        return t;
     }
 
     function renderBoard() {
@@ -876,7 +889,7 @@
                         const bookingDays = b.days || (b.day ? [b.day] : []);
                         if (!bookingDays.includes(day)) return false;
                         // Check time overlap: booking covers this hour slot
-                        return b.startTime <= time && b.endTime > time;
+                        return normalizeTime(b.startTime) <= time && normalizeTime(b.endTime) > time;
                     });
 
                     if (floorBookings.length > 0) {
