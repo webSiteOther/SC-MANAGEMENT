@@ -930,6 +930,8 @@
             filterAndRender();
         } catch (error) {
             console.error('Error:', error);
+            showToast('خطأ أثناء التحميل: ' + error.message, 'error');
+            document.getElementById('paymentsTableBody').innerHTML = '<tr><td colspan="11" style="text-align:center;color:red;padding:20px;">حدث خطأ: ' + error.message + '<br><small>تأكد من عمل Deploy للـ Script الجديد.</small></td></tr>';
         }
         showLoading(false);
     }
