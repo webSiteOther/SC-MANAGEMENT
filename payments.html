@@ -4,531 +4,188 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Scientific Center | إدارة المدفوعات</title>
-    
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Chart.js -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --dark-blue: #1a2a6c;
-            --medium-blue: #2a4a9c;
-            --primary-blue: #3c6ec8;
-            --light-blue: #4a8fe0;
-            --gold: #f4a261;
-            --gold-dark: #e76f51;
-            --white: #ffffff;
-            --light-gray: #f8f9fa;
-            --gray: #6c757d;
-            --dark: #1e2a3e;
-            --danger: #e74c3c;
-            --success: #2ecc71;
-            --warning: #f39c12;
-            --info: #3498db;
-            --sidebar-width: 270px;
-            --header-height: 65px;
+            --dark-blue: #1a2a6c; --medium-blue: #2a4a9c; --primary-blue: #3c6ec8;
+            --light-blue: #4a8fe0; --gold: #f4a261; --gold-dark: #e76f51;
+            --white: #ffffff; --light-gray: #f8f9fa; --gray: #6c757d;
+            --dark: #1e2a3e; --danger: #e74c3c; --success: #2ecc71;
+            --warning: #f39c12; --info: #3498db; --sidebar-width: 270px; --header-height: 65px;
         }
-
-        body {
-            font-family: 'Cairo', 'Poppins', sans-serif;
-            background: var(--light-gray);
-            overflow-x: hidden;
-        }
-
-        .app-container {
-            display: flex;
-            min-height: 100vh;
-        }
+        body { font-family: 'Cairo', sans-serif; background: var(--light-gray); overflow-x: hidden; }
+        .app-container { display: flex; min-height: 100vh; }
 
         /* Sidebar */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: linear-gradient(180deg, var(--dark-blue) 0%, var(--medium-blue) 100%);
-            color: white;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            transition: all 0.3s;
-            z-index: 100;
-        }
-
+        .sidebar { width: var(--sidebar-width); background: linear-gradient(180deg, var(--dark-blue) 0%, var(--medium-blue) 100%); color: white; position: fixed; height: 100vh; overflow-y: auto; transition: all 0.3s; z-index: 100; }
         .sidebar::-webkit-scrollbar { width: 5px; }
-        .sidebar::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); }
         .sidebar::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
-
-        .sidebar-logo {
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 20px;
-        }
-
-        .sidebar-logo .logo-icon {
-            width: 55px;
-            height: 55px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 12px;
-        }
+        .sidebar-logo { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+        .sidebar-logo .logo-icon { width: 55px; height: 55px; background: rgba(255,255,255,0.15); border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
         .sidebar-logo .logo-icon i { font-size: 28px; color: var(--gold); }
         .sidebar-logo h3 { font-size: 18px; margin-bottom: 3px; }
         .sidebar-logo p { font-size: 10px; opacity: 0.7; }
-
-        .user-info {
-            padding: 15px 20px;
-            background: rgba(255,255,255,0.08);
-            margin: 15px;
-            border-radius: 16px;
-            text-align: center;
-        }
-
-        .user-avatar {
-            width: 50px;
-            height: 50px;
-            background: var(--gold);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 10px;
-        }
+        .user-info { padding: 15px 20px; background: rgba(255,255,255,0.08); margin: 15px; border-radius: 16px; text-align: center; }
+        .user-avatar { width: 50px; height: 50px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
         .user-avatar i { font-size: 24px; color: var(--dark-blue); }
         .user-name { font-weight: 700; font-size: 14px; }
         .user-role { font-size: 11px; color: var(--gold); margin-top: 5px; }
-
-        .nav-menu {
-            list-style: none;
-            padding: 0 15px;
-        }
+        .nav-menu { list-style: none; padding: 0 15px; }
         .nav-item { margin-bottom: 5px; }
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            color: rgba(255,255,255,0.85);
-            text-decoration: none;
-            border-radius: 12px;
-            transition: all 0.3s;
-            font-size: 14px;
-        }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: rgba(255,255,255,0.85); text-decoration: none; border-radius: 12px; transition: all 0.3s; font-size: 14px; }
         .nav-link:hover { background: rgba(255,255,255,0.1); color: white; }
         .nav-link.active { background: var(--gold); color: var(--dark-blue); font-weight: 600; }
         .nav-link i { width: 22px; text-align: center; font-size: 16px; }
 
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            margin-right: var(--sidebar-width);
-            min-height: 100vh;
-        }
-
-        .top-header {
-            background: var(--white);
-            padding: 0 25px;
-            height: var(--header-height);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 99;
-        }
-
+        /* Main */
+        .main-content { flex: 1; margin-right: var(--sidebar-width); min-height: 100vh; }
+        .top-header { background: var(--white); padding: 0 25px; height: var(--header-height); display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 99; }
         .page-title h2 { font-size: 20px; font-weight: 700; color: var(--dark-blue); }
         .page-title p { font-size: 12px; color: var(--gray); margin-top: 2px; }
-
         .header-actions { display: flex; align-items: center; gap: 20px; }
-        .logout-btn {
-            background: none;
-            border: none;
-            color: var(--danger);
-            cursor: pointer;
-            font-size: 14px;
-            padding: 8px 15px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .logout-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 14px; padding: 8px 15px; border-radius: 10px; display: flex; align-items: center; gap: 8px; font-family: inherit; }
         .logout-btn:hover { background: #fdecea; }
-        .menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 22px;
-            color: var(--dark-blue);
-            cursor: pointer;
-        }
-
+        .menu-toggle { display: none; background: none; border: none; font-size: 22px; color: var(--dark-blue); cursor: pointer; }
         .content-area { padding: 25px; }
 
-        /* Stats Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border-right: 4px solid var(--gold);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .stat-info .stat-value { font-size: 28px; font-weight: 800; color: var(--dark-blue); }
-        .stat-info .stat-label { color: var(--gray); font-size: 12px; margin-top: 5px; }
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--light-blue), var(--primary-blue));
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .stat-icon i { font-size: 24px; color: white; }
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: var(--white); border-radius: 18px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-right: 4px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
+        .stat-info .stat-value { font-size: 22px; font-weight: 800; color: var(--dark-blue); }
+        .stat-info .stat-label { color: var(--gray); font-size: 11px; margin-top: 4px; }
+        .stat-icon { width: 46px; height: 46px; background: linear-gradient(135deg, var(--light-blue), var(--primary-blue)); border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+        .stat-icon i { font-size: 22px; color: white; }
 
         /* Charts */
-        .charts-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .chart-card {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e9ecef;
-        }
-        .chart-header h3 { font-size: 16px; color: var(--dark-blue); }
+        .charts-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .chart-card { background: var(--white); border-radius: 18px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e9ecef; }
+        .chart-header h3 { font-size: 15px; color: var(--dark-blue); }
         canvas { max-height: 200px; }
 
         /* Toolbar */
-        .toolbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .search-box {
-            display: flex;
-            gap: 10px;
-            flex: 1;
-            max-width: 400px;
-        }
-        .search-box input {
-            flex: 1;
-            padding: 12px 16px;
-            border: 2px solid #e9ecef;
-            border-radius: 14px;
-            font-family: inherit;
-        }
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-        }
-        .search-box button {
-            padding: 12px 20px;
-            background: var(--primary-blue);
-            color: white;
-            border: none;
-            border-radius: 14px;
-            cursor: pointer;
-        }
-
-        .btn-add {
-            padding: 12px 24px;
-            background: linear-gradient(135deg, var(--success), #27ae60);
-            color: white;
-            border: none;
-            border-radius: 14px;
-            cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+        .search-box { display: flex; gap: 8px; flex: 1; max-width: 380px; }
+        .search-box input { flex: 1; padding: 11px 15px; border: 2px solid #e9ecef; border-radius: 12px; font-family: inherit; font-size: 14px; transition: border-color 0.2s; }
+        .search-box input:focus { outline: none; border-color: var(--primary-blue); }
+        .search-box button { padding: 11px 18px; background: var(--primary-blue); color: white; border: none; border-radius: 12px; cursor: pointer; font-family: inherit; }
+        .btn-add { padding: 11px 22px; background: linear-gradient(135deg, var(--success), #27ae60); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; display: flex; align-items: center; gap: 8px; font-family: inherit; font-size: 14px; transition: all 0.2s; }
+        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(46,204,113,0.4); }
 
         /* Filters */
-        .filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 25px;
-            background: var(--white);
-            padding: 15px 20px;
-            border-radius: 16px;
-        }
-        .filter-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .filter-group label { font-size: 13px; color: var(--gray); }
-        .filter-group select {
-            padding: 8px 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            font-family: inherit;
-        }
+        .filters { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; background: var(--white); padding: 15px 20px; border-radius: 14px; box-shadow: 0 1px 5px rgba(0,0,0,0.04); }
+        .filter-group { display: flex; align-items: center; gap: 8px; }
+        .filter-group label { font-size: 12px; color: var(--gray); white-space: nowrap; font-weight: 600; }
+        .filter-group select { padding: 7px 10px; border: 2px solid #e9ecef; border-radius: 9px; font-family: inherit; font-size: 13px; cursor: pointer; background: white; transition: border-color 0.2s; }
+        .filter-group select:focus { outline: none; border-color: var(--primary-blue); }
 
-        /* Payments Table */
-        .payments-table-container {
-            background: var(--white);
-            border-radius: 20px;
-            overflow-x: auto;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        .payments-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px;
-        }
-        .payments-table th {
-            text-align: right;
-            padding: 16px;
-            background: var(--dark-blue);
-            color: white;
-            font-weight: 600;
-            font-size: 13px;
-        }
-        .payments-table td {
-            padding: 14px 16px;
-            border-bottom: 1px solid #e9ecef;
-            font-size: 13px;
-        }
-        .payments-table tr:hover { background: var(--light-gray); }
+        /* Table */
+        .payments-table-container { background: var(--white); border-radius: 18px; overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .payments-table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        .payments-table th { text-align: right; padding: 14px 12px; background: var(--dark-blue); color: white; font-weight: 600; font-size: 12px; white-space: nowrap; }
+        .payments-table th:first-child { border-radius: 0 0 0 0; }
+        .payments-table td { padding: 12px; border-bottom: 1px solid #f0f2f5; font-size: 13px; }
+        .payments-table tr:last-child td { border-bottom: none; }
+        .payments-table tbody tr:hover { background: #f8faff; }
 
-        .status-badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
         .status-paid { background: #d4edda; color: #155724; }
         .status-partial { background: #fff3cd; color: #856404; }
         .status-unpaid { background: #f8d7da; color: #721c24; }
 
-        .action-buttons { display: flex; gap: 8px; }
-        .btn-icon {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 12px;
-        }
+        .action-buttons { display: flex; gap: 6px; }
+        .btn-icon { padding: 5px 10px; border: none; border-radius: 7px; cursor: pointer; font-size: 12px; transition: all 0.2s; }
         .btn-view { background: var(--info); color: white; }
         .btn-delete { background: var(--danger); color: white; }
+        .btn-icon:hover { opacity: 0.85; transform: scale(1.05); }
 
         /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.55); z-index: 1000; align-items: center; justify-content: center; }
         .modal.show { display: flex; }
-        .modal-content {
-            background: var(--white);
-            border-radius: 24px;
-            width: 90%;
-            max-width: 550px;
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid #e9ecef;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .modal-header h3 { color: var(--dark-blue); }
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--gray);
-        }
-        .modal-body { padding: 20px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            color: var(--dark);
-        }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            font-family: inherit;
-        }
-        .modal-footer {
-            padding: 20px;
-            border-top: 1px solid #e9ecef;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-        .btn-save {
-            padding: 10px 24px;
-            background: var(--success);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-        .btn-cancel {
-            padding: 10px 24px;
-            background: var(--gray);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-        }
+        .modal-content { background: var(--white); border-radius: 22px; width: 92%; max-width: 620px; max-height: 88vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
+        .modal-header { padding: 18px 22px; border-bottom: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, var(--dark-blue), var(--medium-blue)); border-radius: 22px 22px 0 0; }
+        .modal-header h3 { color: white; font-size: 16px; }
+        .close-modal { background: rgba(255,255,255,0.15); border: none; font-size: 20px; cursor: pointer; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+        .close-modal:hover { background: rgba(255,255,255,0.3); }
+        .modal-body { padding: 22px; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 13px; color: var(--dark); }
+        .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 2px solid #e9ecef; border-radius: 10px; font-family: inherit; font-size: 14px; transition: border-color 0.2s; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary-blue); }
+        .modal-footer { padding: 16px 22px; border-top: 1px solid #e9ecef; display: flex; justify-content: flex-end; gap: 10px; background: #f8f9fa; border-radius: 0 0 22px 22px; }
+        .btn-save { padding: 10px 24px; background: linear-gradient(135deg, var(--success), #27ae60); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 700; font-family: inherit; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+        .btn-cancel { padding: 10px 20px; background: #e9ecef; color: var(--gray); border: none; border-radius: 10px; cursor: pointer; font-family: inherit; font-size: 14px; }
+        .btn-back { padding: 10px 20px; background: var(--info); color: white; border: none; border-radius: 10px; cursor: pointer; font-family: inherit; font-size: 14px; display: flex; align-items: center; gap: 6px; }
 
-        /* Student Selector */
-        .student-selector {
-            background: var(--light-gray);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .student-selector:hover {
-            background: #e9ecef;
-            transform: translateX(-5px);
-        }
-        .student-selector .student-name { font-weight: 700; color: var(--dark-blue); }
-        .student-selector .student-code { font-size: 11px; color: var(--gray); }
+        /* Steps */
+        .step-indicator { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+        .step-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+        .step-dot.active { background: var(--primary-blue); color: white; }
+        .step-dot.done { background: var(--success); color: white; }
+        .step-dot.inactive { background: #e9ecef; color: var(--gray); }
+        .step-line { flex: 1; height: 2px; background: #e9ecef; }
+        .step-line.done { background: var(--success); }
+
+        /* Student search results */
+        .student-result-item { padding: 12px 15px; cursor: pointer; border: 1.5px solid #e9ecef; border-radius: 10px; margin-bottom: 8px; transition: all 0.15s; background: white; }
+        .student-result-item:hover { background: #f0f4ff; border-color: var(--primary-blue); transform: translateX(-3px); }
+        .student-result-name { font-weight: 700; color: var(--dark-blue); font-size: 14px; }
+        .student-result-meta { font-size: 12px; color: var(--gray); margin-top: 3px; }
+
+        /* Category buttons */
+        .cat-btn { flex: 1; padding: 20px; border: 2px solid #e9ecef; border-radius: 14px; cursor: pointer; background: white; transition: all 0.2s; text-align: center; }
+        .cat-btn:hover, .cat-btn.selected { border-color: var(--primary-blue); background: #f0f4ff; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(60,110,200,0.15); }
+        .cat-btn.addon:hover, .cat-btn.addon.selected { border-color: var(--gold); background: #fff8f0; box-shadow: 0 4px 15px rgba(244,162,97,0.2); }
+
+        /* Level buttons */
+        .level-btn { flex: 1; min-width: 85px; max-width: 120px; padding: 14px 10px; border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.2s; border: 2px solid #e9ecef; background: white; }
+        .level-btn:hover { transform: scale(1.07); box-shadow: 0 4px 15px rgba(0,0,0,0.12); }
 
         /* Loading */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255,255,255,0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            display: none;
-        }
+        .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.92); display: none; align-items: center; justify-content: center; z-index: 2000; flex-direction: column; gap: 15px; }
         .loading-overlay.show { display: flex; }
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #e9ecef;
-            border-top-color: var(--primary-blue);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
+        .loading-spinner { width: 50px; height: 50px; border: 4px solid #e9ecef; border-top-color: var(--primary-blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .loading-text { color: var(--dark-blue); font-weight: 700; font-size: 15px; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Toast Notifications */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .toast {
-            padding: 14px 24px;
-            border-radius: 14px;
-            color: white;
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: toastIn 0.3s ease, toastOut 0.3s ease 3.7s forwards;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            max-width: 400px;
-            font-family: inherit;
-        }
+        /* Toast */
+        .toast-container { position: fixed; top: 20px; left: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { padding: 14px 22px; border-radius: 14px; color: white; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 10px; animation: toastIn 0.3s ease; box-shadow: 0 8px 25px rgba(0,0,0,0.15); max-width: 380px; font-family: inherit; }
         .toast-success { background: linear-gradient(135deg, #2ecc71, #27ae60); }
         .toast-error { background: linear-gradient(135deg, #e74c3c, #c0392b); }
         .toast-warning { background: linear-gradient(135deg, #f39c12, #e67e22); }
         .toast-info { background: linear-gradient(135deg, #3498db, #2980b9); }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateX(-30px); } }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 
-        .empty-state { text-align: center; padding: 50px; color: var(--gray); }
+        /* Pay mode radio */
+        .pay-mode-group { display: flex; gap: 10px; }
+        .pay-mode-btn { flex: 1; padding: 12px; border: 2px solid #e9ecef; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; font-family: inherit; font-size: 14px; background: white; }
+        .pay-mode-btn:hover { border-color: var(--primary-blue); background: #f0f4ff; }
+        .pay-mode-btn input[type="radio"] { accent-color: var(--primary-blue); }
+
+        .remaining-preview { padding: 12px; border-radius: 10px; margin-bottom: 12px; text-align: center; font-weight: 700; display: none; border: 2px solid; }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                position: fixed;
-                z-index: 1000;
-            }
+            .sidebar { transform: translateX(-100%); position: fixed; z-index: 1000; }
             .sidebar.open { transform: translateX(0); }
             .main-content { margin-right: 0; }
             .menu-toggle { display: block; }
             .toolbar { flex-direction: column; align-items: stretch; }
             .search-box { max-width: 100%; }
-            .content-area { padding: 15px; }
+            .content-area { padding: 12px; }
         }
     </style>
 </head>
 <body>
-<div class="toast-container" id="toastContainer"></div>
 
+<div class="toast-container" id="toastContainer"></div>
 <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-spinner"></div>
+    <div class="loading-text">جاري التحميل...</div>
 </div>
 
 <div class="app-container">
@@ -539,111 +196,80 @@
             <h3>Scientific Center</h3>
             <p>نظام إدارة الكورسات</p>
         </div>
-        <div class="user-info" id="userInfo">
+        <div class="user-info">
             <div class="user-avatar"><i class="fas fa-user"></i></div>
             <div class="user-name" id="userName"></div>
             <div class="user-role" id="userRole"></div>
         </div>
         <ul class="nav-menu">
-            <li class="nav-item">
-                <a href="dashboard.html" class="nav-link">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>الرئيسية</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="students.html" class="nav-link">
-                    <i class="fas fa-users"></i>
-                    <span>الطلاب</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="trainers.html" class="nav-link">
-                    <i class="fas fa-chalkboard-user"></i>
-                    <span>المدربين</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="schedule.html" class="nav-link">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>الجدول</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="payments.html" class="nav-link active">
-                    <i class="fas fa-money-bill-wave"></i>
-                    <span>المدفوعات</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="reports.html" class="nav-link">
-                    <i class="fas fa-chart-line"></i>
-                    <span>التقارير</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="settings.html" class="nav-link">
-                    <i class="fas fa-cog"></i>
-                    <span>الإعدادات</span>
-                </a>
-            </li>
+            <li class="nav-item"><a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i><span>الرئيسية</span></a></li>
+            <li class="nav-item"><a href="students.html" class="nav-link"><i class="fas fa-users"></i><span>الطلاب</span></a></li>
+            <li class="nav-item"><a href="trainers.html" class="nav-link"><i class="fas fa-chalkboard-user"></i><span>المدربين</span></a></li>
+            <li class="nav-item"><a href="schedule.html" class="nav-link"><i class="fas fa-calendar-alt"></i><span>الجدول</span></a></li>
+            <li class="nav-item"><a href="payments.html" class="nav-link active"><i class="fas fa-money-bill-wave"></i><span>المدفوعات</span></a></li>
+            <li class="nav-item"><a href="reports.html" class="nav-link"><i class="fas fa-chart-line"></i><span>التقارير</span></a></li>
+            <li class="nav-item"><a href="settings.html" class="nav-link"><i class="fas fa-cog"></i><span>الإعدادات</span></a></li>
         </ul>
     </aside>
 
-    <!-- Main Content -->
+    <!-- Main -->
     <main class="main-content">
         <header class="top-header">
             <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
             <div class="page-title">
-                <h2>إدارة المدفوعات</h2>
-                <p>تسجيل المدفوعات، متابعة الأقساط، والتقارير المالية</p>
+                <h2><i class="fas fa-money-bill-wave" style="color:var(--gold);margin-left:8px;"></i>إدارة المدفوعات</h2>
+                <p>تسجيل المدفوعات ومتابعة الأقساط</p>
             </div>
             <div class="header-actions">
+                <div id="connectionStatus" style="font-size:12px;color:var(--gray);display:flex;align-items:center;gap:5px;">
+                    <i class="fas fa-circle" style="font-size:8px;color:orange;" id="statusDot"></i>
+                    <span id="statusText">جاري الاتصال...</span>
+                </div>
                 <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>خروج</span></button>
             </div>
         </header>
 
         <div class="content-area">
-            <!-- Stats Cards -->
+            <!-- Stats -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-info">
-                        <div class="stat-value" id="totalPaid">0</div>
+                        <div class="stat-value" id="totalPaid">--</div>
                         <div class="stat-label">إجمالي المدفوعات</div>
                     </div>
                     <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-info">
-                        <div class="stat-value" id="totalRemaining">0</div>
+                        <div class="stat-value" id="totalRemaining">--</div>
                         <div class="stat-label">المتبقي على الطلاب</div>
                     </div>
-                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                    <div class="stat-icon" style="background:linear-gradient(135deg,#e74c3c,#c0392b)"><i class="fas fa-clock"></i></div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-info">
-                        <div class="stat-value" id="totalStudents">0</div>
-                        <div class="stat-label">عدد الطلاب</div>
+                        <div class="stat-value" id="totalStudents">--</div>
+                        <div class="stat-label">إجمالي الطلاب</div>
                     </div>
-                    <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
+                    <div class="stat-icon" style="background:linear-gradient(135deg,#2ecc71,#27ae60)"><i class="fas fa-user-graduate"></i></div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-info">
-                        <div class="stat-value" id="overdueCount">0</div>
+                        <div class="stat-value" id="overdueCount">--</div>
                         <div class="stat-label">طلاب عليهم متأخرات</div>
                     </div>
-                    <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div class="stat-icon" style="background:linear-gradient(135deg,#f39c12,#e67e22)"><i class="fas fa-exclamation-triangle"></i></div>
                 </div>
             </div>
 
             <!-- Charts -->
             <div class="charts-row">
                 <div class="chart-card">
-                    <div class="chart-header"><h3><i class="fas fa-chart-pie"></i> توزيع المدفوعات</h3></div>
+                    <div class="chart-header"><h3><i class="fas fa-chart-pie" style="color:var(--primary-blue);"></i> توزيع المدفوعات</h3></div>
                     <canvas id="paymentChart"></canvas>
                 </div>
                 <div class="chart-card">
-                    <div class="chart-header"><h3><i class="fas fa-chart-line"></i> الإيرادات الشهرية</h3></div>
+                    <div class="chart-header"><h3><i class="fas fa-chart-line" style="color:var(--success);"></i> الإيرادات الشهرية</h3></div>
                     <canvas id="revenueChart"></canvas>
                 </div>
             </div>
@@ -651,62 +277,64 @@
             <!-- Toolbar -->
             <div class="toolbar">
                 <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="بحث باسم الطالب أو الكود...">
-                    <button id="searchBtn"><i class="fas fa-search"></i> بحث</button>
+                    <input type="text" id="searchInput" placeholder="🔍 بحث باسم الطالب أو الكود...">
+                    <button id="searchBtn"><i class="fas fa-search"></i></button>
                 </div>
-                <button class="btn-add" id="addPaymentBtn"><i class="fas fa-plus"></i><span>تسجيل دفعة جديدة</span></button>
+                <button class="btn-add" id="addPaymentBtn"><i class="fas fa-plus"></i> تسجيل دفعة جديدة</button>
             </div>
-
 
             <!-- Filters -->
             <div class="filters">
                 <div class="filter-group">
-                    <label><i class="fas fa-layer-group"></i> الدور:</label>
-                    <select id="floorFilter">
-                        <option value="all">الكل</option>
-                    </select>
+                    <label><i class="fas fa-building"></i> القسم:</label>
+                    <select id="deptFilter"><option value="all">الكل</option></select>
                 </div>
                 <div class="filter-group">
-                    <label><i class="fas fa-building"></i> القسم:</label>
-                    <select id="deptFilter">
-                        <option value="all">الكل</option>
-                    </select>
+                    <label><i class="fas fa-book"></i> الكورس:</label>
+                    <select id="courseFilter"><option value="all">الكل</option></select>
+                </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-layer-group"></i> الدور:</label>
+                    <select id="floorFilter"><option value="all">الكل</option></select>
                 </div>
                 <div class="filter-group">
                     <label><i class="fas fa-filter"></i> حالة الدفع:</label>
                     <select id="statusFilter">
-
                         <option value="all">الكل</option>
                         <option value="paid">مدفوع بالكامل</option>
                         <option value="partial">مدفوع جزئياً</option>
                         <option value="unpaid">غير مدفوع</option>
                     </select>
                 </div>
+                <button onclick="clearFilters()" style="padding:7px 14px;background:#f0f4ff;color:var(--primary-blue);border:1.5px solid var(--primary-blue);border-radius:9px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;">
+                    <i class="fas fa-times"></i> مسح الفلاتر
+                </button>
             </div>
 
-            <!-- Payments Table -->
+            <!-- Table -->
             <div class="payments-table-container">
                 <table class="payments-table">
                     <thead>
-                        
                         <tr>
                             <th>الطالب</th>
                             <th>الكود</th>
+                            <th>الكورس</th>
                             <th>المستوى</th>
                             <th>نوع الدفع</th>
                             <th>إجمالي المدفوع</th>
                             <th>الخصم</th>
-                            <th>إجمالي المستوى</th>
+                            <th>رسوم المستوى</th>
                             <th>المتبقي</th>
                             <th>الحالة</th>
-                            <th>ملاحظات</th>
                             <th>آخر دفعة</th>
                             <th>إجراءات</th>
                         </tr>
-
                     </thead>
                     <tbody id="paymentsTableBody">
-                        <tr><td colspan="12" style="text-align: center; padding:20px; color:#999;"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</td></tr>
+                        <tr><td colspan="12" style="text-align:center;padding:40px;color:var(--gray);">
+                            <i class="fas fa-spinner fa-spin" style="font-size:24px;margin-bottom:10px;display:block;"></i>
+                            جاري التحميل...
+                        </td></tr>
                     </tbody>
                 </table>
             </div>
@@ -716,107 +344,131 @@
 
 <!-- Add Payment Modal -->
 <div class="modal" id="paymentModal">
-    <div class="modal-content" style="max-width:700px;">
+    <div class="modal-content">
         <div class="modal-header">
-            <h3 id="modalTitle">تسجيل دفعة جديدة</h3>
+            <h3 id="modalTitle"><i class="fas fa-money-bill-wave" style="margin-left:8px;"></i>تسجيل دفعة جديدة</h3>
             <button class="close-modal" id="closeModal">&times;</button>
         </div>
         <div class="modal-body">
+
+            <!-- Step indicator -->
+            <div class="step-indicator" id="stepIndicator">
+                <div class="step-dot active" id="step-dot-1">1</div>
+                <div class="step-line" id="step-line-1"></div>
+                <div class="step-dot inactive" id="step-dot-2">2</div>
+                <div class="step-line" id="step-line-2"></div>
+                <div class="step-dot inactive" id="step-dot-3">3</div>
+            </div>
+
             <!-- Step 1: Search Student -->
             <div id="step1">
                 <div class="form-group">
                     <label><i class="fas fa-search"></i> البحث عن طالب</label>
-                    <input type="text" id="studentSearchInput" placeholder="ابحث باسم الطالب أو كوده..." style="width:100%;padding:12px;border:2px solid #e9ecef;border-radius:10px;">
+                    <input type="text" id="studentSearchInput" placeholder="اكتب اسم الطالب أو كوده...">
                 </div>
-                <div id="studentResults" style="max-height:300px;overflow-y:auto;margin-top:10px;"></div>
+                <div id="studentResults" style="max-height:280px;overflow-y:auto;margin-top:10px;">
+                    <div style="padding:20px;text-align:center;color:var(--gray);">
+                        <i class="fas fa-search" style="font-size:30px;opacity:0.3;display:block;margin-bottom:8px;"></i>
+                        ابحث باسم الطالب أو الكود
+                    </div>
+                </div>
             </div>
 
-            <!-- Step 2: Choose what to pay -->
+            <!-- Step 2: Choose category -->
             <div id="step2" style="display:none;">
                 <div id="studentInfoBar" style="background:linear-gradient(135deg,#1a2a6c,#2a4a9c);color:white;padding:15px;border-radius:12px;margin-bottom:20px;">
                     <div style="font-size:16px;font-weight:700;" id="selectedStudentDisplay"></div>
                     <div style="font-size:13px;opacity:0.8;margin-top:4px;" id="selectedStudentCourse"></div>
                 </div>
-
-                <div style="display:flex;gap:10px;margin-bottom:20px;">
-                    <button onclick="choosePaymentCategory('level')" id="btnPayLevel" style="flex:1;padding:20px;border:2px solid #e9ecef;border-radius:12px;cursor:pointer;background:white;transition:all 0.2s;" onmouseover="this.style.borderColor='#3c6ec8'" onmouseout="if(this.id!='btnPayLevel' || !this.classList.contains('selected')) this.style.borderColor='#e9ecef'">
-                        <i class="fas fa-graduation-cap" style="font-size:24px;color:#3c6ec8;display:block;margin-bottom:8px;"></i>
-                        <div style="font-weight:700;">دفع كورس / مستوى</div>
-                        <div style="font-size:12px;color:#666;margin-top:4px;">دفع قسط مستوى من الكورس</div>
+                <p style="font-weight:700;margin-bottom:12px;color:var(--dark-blue);">اختر نوع الدفعة:</p>
+                <div style="display:flex;gap:12px;">
+                    <button class="cat-btn" id="btnPayLevel" onclick="choosePaymentCategory('level')">
+                        <i class="fas fa-graduation-cap" style="font-size:28px;color:var(--primary-blue);display:block;margin-bottom:10px;"></i>
+                        <div style="font-weight:700;font-size:15px;">دفع كورس / مستوى</div>
+                        <div style="font-size:12px;color:#666;margin-top:5px;">دفع قسط مستوى من الكورس</div>
                     </button>
-                    <button onclick="choosePaymentCategory('addon')" id="btnPayAddon" style="flex:1;padding:20px;border:2px solid #e9ecef;border-radius:12px;cursor:pointer;background:white;transition:all 0.2s;" onmouseover="this.style.borderColor='#f4a261'" onmouseout="if(this.id!='btnPayAddon' || !this.classList.contains('selected')) this.style.borderColor='#e9ecef'">
-                        <i class="fas fa-plus-circle" style="font-size:24px;color:#f4a261;display:block;margin-bottom:8px;"></i>
-                        <div style="font-weight:700;">دفع إضافة (AddOn)</div>
-                        <div style="font-size:12px;color:#666;margin-top:4px;">دفع مقابل خدمة إضافية</div>
+                    <button class="cat-btn addon" id="btnPayAddon" onclick="choosePaymentCategory('addon')">
+                        <i class="fas fa-plus-circle" style="font-size:28px;color:var(--gold);display:block;margin-bottom:10px;"></i>
+                        <div style="font-weight:700;font-size:15px;">دفع إضافة (AddOn)</div>
+                        <div style="font-size:12px;color:#666;margin-top:5px;">دفع مقابل خدمة إضافية</div>
                     </button>
                 </div>
             </div>
 
             <!-- Step 3A: Level Payment -->
             <div id="step3Level" style="display:none;">
+                <div id="studentInfoBar2" style="background:linear-gradient(135deg,#1a2a6c,#2a4a9c);color:white;padding:12px 15px;border-radius:12px;margin-bottom:15px;font-size:14px;font-weight:700;" id="step3StudentInfo"></div>
+
                 <div style="margin-bottom:15px;">
-                    <label style="font-weight:700;display:block;margin-bottom:8px;">اختر المستوى</label>
+                    <label style="font-weight:700;display:block;margin-bottom:10px;color:var(--dark-blue);">
+                        <i class="fas fa-layer-group"></i> اختر المستوى:
+                    </label>
                     <div id="levelButtons" style="display:flex;flex-wrap:wrap;gap:10px;"></div>
                 </div>
-                <div id="levelPaymentDetails" style="display:none;background:#f8f9fa;padding:15px;border-radius:12px;margin-bottom:15px;">
-                    <div id="levelStatusBanner" style="padding:10px;border-radius:8px;margin-bottom:12px;text-align:center;font-weight:700;"></div>
+
+                <div id="levelPaymentDetails" style="display:none;background:#f8f9fa;padding:15px;border-radius:12px;margin-bottom:15px;border:1px solid #e9ecef;">
+                    <div id="levelStatusBanner" style="padding:12px;border-radius:8px;margin-bottom:12px;text-align:center;font-weight:700;font-size:14px;"></div>
                     <div id="levelPayHistory"></div>
                 </div>
+
                 <div id="levelPayForm" style="display:none;">
-                    <div class="form-group" style="margin-bottom:12px;">
-                        <label>إجمالي رسوم المستوى (ج.م)</label>
-                        <input type="number" id="totalLevelFee" placeholder="مثلاً: 1500" style="width:100%;padding:10px;border:2px solid #e9ecef;border-radius:8px;">
+                    <div class="form-group">
+                        <label><i class="fas fa-coins"></i> إجمالي رسوم المستوى (ج.م)</label>
+                        <input type="number" id="totalLevelFee" placeholder="مثلاً: 1500" min="0" oninput="updateRemainingPreview()">
                     </div>
-                    <div style="margin-bottom:12px;">
-                        <label style="font-weight:700;display:block;margin-bottom:8px;">طريقة الدفع</label>
-                        <div style="display:flex;gap:10px;">
-                            <label style="flex:1;padding:12px;border:2px solid #e9ecef;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:8px;">
+                    <div style="margin-bottom:14px;">
+                        <label style="font-weight:700;display:block;margin-bottom:8px;font-size:13px;">طريقة الدفع:</label>
+                        <div class="pay-mode-group">
+                            <label class="pay-mode-btn">
                                 <input type="radio" name="payMode" value="full" onchange="onPayModeChange()"> دفع كامل
                             </label>
-                            <label style="flex:1;padding:12px;border:2px solid #e9ecef;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:8px;">
+                            <label class="pay-mode-btn">
                                 <input type="radio" name="payMode" value="partial" onchange="onPayModeChange()"> دفع جزئي
                             </label>
                         </div>
                     </div>
-                    <div class="form-group" style="margin-bottom:12px;">
-                        <label>المبلغ المدفوع (ج.م)</label>
-                        <input type="number" id="amountPaid" placeholder="المبلغ المدفوع" style="width:100%;padding:10px;border:2px solid #e9ecef;border-radius:8px;" oninput="updateRemainingPreview()">
-                    </div>
-                    <div class="form-group" style="margin-bottom:12px;">
-                        <label>خصم (ج.م) - اختياري</label>
-                        <input type="number" id="discountAmount" placeholder="0" value="0" style="width:100%;padding:10px;border:2px solid #e9ecef;border-radius:8px;" oninput="updateRemainingPreview()">
-                    </div>
-                    <div id="remainingPreview" style="background:#e8f5e9;border:1px solid #4caf50;border-radius:8px;padding:10px;margin-bottom:12px;text-align:center;font-weight:700;display:none;"></div>
-                    <div class="form-group" style="margin-bottom:12px;">
-                        <label>ملاحظات</label>
-                        <input type="text" id="notes" placeholder="ملاحظات إضافية" style="width:100%;padding:10px;border:2px solid #e9ecef;border-radius:8px;">
+                    <div class="form-group">
+                        <label><i class="fas fa-money-bill"></i> المبلغ المدفوع (ج.م)</label>
+                        <input type="number" id="amountPaid" placeholder="0" min="0" oninput="updateRemainingPreview()">
                     </div>
                     <div class="form-group">
-                        <label>تاريخ الدفع</label>
-                        <input type="date" id="paymentDate" style="width:100%;padding:10px;border:2px solid #e9ecef;border-radius:8px;">
+                        <label><i class="fas fa-tag"></i> خصم (ج.م) - اختياري</label>
+                        <input type="number" id="discountAmount" placeholder="0" value="0" min="0" oninput="updateRemainingPreview()">
+                    </div>
+                    <div class="remaining-preview" id="remainingPreview"></div>
+                    <div class="form-group">
+                        <label><i class="fas fa-sticky-note"></i> ملاحظات</label>
+                        <input type="text" id="notes" placeholder="ملاحظات إضافية (اختياري)">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar"></i> تاريخ الدفع</label>
+                        <input type="date" id="paymentDate">
                     </div>
                 </div>
             </div>
 
             <!-- Step 3B: AddOn Payment -->
             <div id="step3Addon" style="display:none;">
+                <div id="studentInfoBar3" style="background:linear-gradient(135deg,#1a2a6c,#2a4a9c);color:white;padding:12px 15px;border-radius:12px;margin-bottom:15px;font-size:14px;font-weight:700;"></div>
+                <p style="font-weight:700;margin-bottom:12px;color:var(--dark-blue);">اختر الإضافة:</p>
                 <div id="addonList" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:15px;"></div>
                 <div id="addonPayForm" style="display:none;">
-                    <div id="addonSelectedInfo" style="background:#fff3e0;padding:12px;border-radius:8px;margin-bottom:12px;font-weight:700;"></div>
-                    <div class="form-group" style="margin-bottom:12px;">
-                        <label>تاريخ الدفع</label>
-                        <input type="date" id="addonPaymentDate" style="width:100%;padding:10px;border:2px solid #e9ecef;border-radius:8px;">
+                    <div id="addonSelectedInfo" style="background:#fff3e0;padding:12px;border-radius:10px;margin-bottom:12px;font-weight:700;border:1.5px solid var(--gold);"></div>
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar"></i> تاريخ الدفع</label>
+                        <input type="date" id="addonPaymentDate">
                     </div>
                     <div class="form-group">
-                        <label>ملاحظات</label>
-                        <input type="text" id="addonNotes" placeholder="ملاحظات" style="width:100%;padding:10px;border:2px solid #e9ecef;border-radius:8px;">
+                        <label><i class="fas fa-sticky-note"></i> ملاحظات</label>
+                        <input type="text" id="addonNotes" placeholder="ملاحظات">
                     </div>
                 </div>
             </div>
+
         </div>
         <div class="modal-footer">
             <button class="btn-cancel" id="cancelModal">إلغاء</button>
-            <button class="btn-cancel" id="backBtn" style="display:none;" onclick="goBack()"><i class="fas fa-arrow-right"></i> رجوع</button>
+            <button class="btn-back" id="backBtn" style="display:none;" onclick="goBack()"><i class="fas fa-arrow-right"></i> رجوع</button>
             <button class="btn-save" id="savePayment" style="display:none;" onclick="completePayment()">
                 <i class="fas fa-save"></i> تسجيل الدفعة
             </button>
@@ -826,20 +478,25 @@
 
 <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwIqJ0hC7xzs4I6--ocDyCHkwxwmVUk-Y0eOwYsTUCiP39MH2oetro_9ssGTniJOztRjw/exec';
-    
+
     let currentUser = null;
     let allPayments = [];
     let allStudents = [];
     let allCourses = [];
     let allGroups = [];
     let allAddOns = [];
+    let allDepts = [];
+    let allFloors = [];
     let paymentChart, revenueChart;
 
     // Modal state
     let selectedStudentId = null;
     let selectedLevelNumber = null;
     let selectedAddonId = null;
-    let paymentCategory = null; // 'level' or 'addon'
+    let paymentCategory = null;
+    let currentStep = 1;
+
+    // =================== UTILS ===================
 
     function showToast(message, type = 'info') {
         const container = document.getElementById('toastContainer');
@@ -848,122 +505,172 @@
         toast.className = `toast toast-${type}`;
         toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i><span>${message}</span>`;
         container.appendChild(toast);
-        setTimeout(() => toast.remove(), 4000);
+        setTimeout(() => toast.remove(), 4500);
     }
 
-    function showLoading(show) {
+    function showLoading(show, text = 'جاري التحميل...') {
         const overlay = document.getElementById('loadingOverlay');
-        if (show) overlay.classList.add('show');
-        else overlay.classList.remove('show');
+        const textEl = overlay.querySelector('.loading-text');
+        if (textEl) textEl.textContent = text;
+        overlay.classList.toggle('show', show);
     }
+
+    function setStatus(ok, text) {
+        const dot = document.getElementById('statusDot');
+        const txt = document.getElementById('statusText');
+        if (dot) dot.style.color = ok ? '#2ecc71' : '#e74c3c';
+        if (txt) txt.textContent = text;
+    }
+
+    // =================== API ===================
 
     async function apiCall(action, data = {}) {
+        const body = JSON.stringify({ action, ...data });
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const result = await response.json();
+        if (result.success === false) throw new Error(result.message || 'خطأ من الخادم');
+        return result.data !== undefined ? result.data : result;
+    }
+
+    async function safeApiCall(action, data = {}, fallback = []) {
         try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action, ...data })
-            });
-            const result = await response.json();
-            if (result.success === false) throw new Error(result.message || 'خطأ');
-            return result.data !== undefined ? result.data : result;
-        } catch (error) {
-            showToast(error.message || 'خطأ في الاتصال', 'error');
-            throw error;
+            const result = await apiCall(action, data);
+            return result || fallback;
+        } catch (e) {
+            console.warn(`[${action}] failed:`, e.message);
+            return fallback;
         }
     }
+
+    // =================== INIT ===================
 
     document.addEventListener('DOMContentLoaded', function() {
         const userStr = sessionStorage.getItem('loggedInUser');
         if (!userStr) { window.location.href = 'index.html'; return; }
         try { currentUser = JSON.parse(userStr); } catch(e) { window.location.href = 'index.html'; return; }
-        
-        document.getElementById('userName').textContent = currentUser.fullName || currentUser.username;
+
+        document.getElementById('userName').textContent = currentUser.fullName || currentUser.username || 'مستخدم';
         const roleNames = {1:'مدير النظام',2:'محاسب',3:'مدير دور',4:'مسؤول حجوزات',5:'مشاهد'};
         document.getElementById('userRole').textContent = roleNames[currentUser.roleId] || 'مستخدم';
 
         document.getElementById('menuToggle').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
         document.getElementById('logoutBtn').addEventListener('click', () => { sessionStorage.removeItem('loggedInUser'); window.location.href = 'index.html'; });
-        document.getElementById('searchBtn').addEventListener('click', () => filterAndRender());
+        document.getElementById('searchBtn').addEventListener('click', filterAndRender);
         document.getElementById('searchInput').addEventListener('keypress', e => { if(e.key==='Enter') filterAndRender(); });
-        document.getElementById('statusFilter').addEventListener('change', () => filterAndRender());
-        document.getElementById('addPaymentBtn').addEventListener('click', () => openAddPaymentModal());
-        document.getElementById('closeModal').addEventListener('click', () => closeModal());
-        document.getElementById('cancelModal').addEventListener('click', () => closeModal());
+        document.getElementById('statusFilter').addEventListener('change', filterAndRender);
+        document.getElementById('deptFilter').addEventListener('change', filterAndRender);
+        document.getElementById('courseFilter').addEventListener('change', filterAndRender);
+        document.getElementById('floorFilter').addEventListener('change', filterAndRender);
+        document.getElementById('addPaymentBtn').addEventListener('click', openAddPaymentModal);
+        document.getElementById('closeModal').addEventListener('click', closeModal);
+        document.getElementById('cancelModal').addEventListener('click', closeModal);
         document.getElementById('studentSearchInput').addEventListener('input', e => searchStudents(e.target.value));
-        
         window.addEventListener('click', e => { if(e.target === document.getElementById('paymentModal')) closeModal(); });
 
         loadData();
     });
 
-    async function loadData() {
-        showLoading(true);
-        try {
-            const [pRes, sRes, cRes, gRes, aRes, dRes, fRes] = await Promise.all([
-                apiCall('getAllPayments'),
-                apiCall('getAllStudents'),
-                apiCall('getAllCourses'),
-                apiCall('getAllGroups'),
-                apiCall('getAllAddOns'),
-                apiCall('getAllDepartments'),
-                apiCall('getAllFloors')
-            ]);
-            allPayments = pRes || [];
-            allStudents = sRes || [];
-            allCourses = cRes || [];
-            allGroups = gRes || [];
-            allAddOns = aRes || [];
-            
-            const deptFilter = document.getElementById('deptFilter');
-            const floorFilter = document.getElementById('floorFilter');
-            if (deptFilter) {
-                deptFilter.innerHTML = '<option value="all">الكل</option>';
-                if(dRes) dRes.forEach(d => deptFilter.innerHTML += `<option value="${d.id}">${d.name}</option>`);
-                deptFilter.addEventListener('change', () => filterAndRender());
-            }
-            if (floorFilter) {
-                floorFilter.innerHTML = '<option value="all">الكل</option>';
-                if(fRes) fRes.forEach(f => floorFilter.innerHTML += `<option value="${f.id}">${f.name}</option>`);
-                floorFilter.addEventListener('change', () => filterAndRender());
-            }
+    // =================== LOAD DATA ===================
 
+    async function loadData() {
+        showLoading(true, 'جاري تحميل البيانات...');
+        setStatus(false, 'جاري الاتصال...');
+
+        try {
+            // Load sequentially to avoid race conditions / quota issues
+            allStudents = await safeApiCall('getAllStudents', {}, []);
+            allPayments = await safeApiCall('getAllPayments', {}, []);
+            allCourses  = await safeApiCall('getAllCourses', {}, []);
+            allGroups   = await safeApiCall('getAllGroups', {}, []);
+            allAddOns   = await safeApiCall('getAllAddOns', {}, []);
+            allDepts    = await safeApiCall('getAllDepartments', {}, []);
+            allFloors   = await safeApiCall('getAllFloors', {}, []);
+
+            setStatus(true, `متصل ✓ (${allPayments.length} دفعة)`);
+
+            // Populate filter dropdowns
+            populateFilters();
             updateStats();
             updateCharts();
             filterAndRender();
+
         } catch (error) {
-            console.error('Error:', error);
-            showToast('خطأ أثناء التحميل: ' + error.message, 'error');
-            document.getElementById('paymentsTableBody').innerHTML = '<tr><td colspan="12" style="text-align:center;color:red;padding:20px;"><i class="fas fa-exclamation-triangle"></i> حدث خطأ: ' + error.message + '<br><small>تأكد من عمل Deploy للـ Script.</small></td></tr>';
+            console.error('loadData error:', error);
+            setStatus(false, 'خطأ في الاتصال');
+            showToast('خطأ في الاتصال بالخادم: ' + error.message, 'error');
+            document.getElementById('paymentsTableBody').innerHTML =
+                `<tr><td colspan="12" style="text-align:center;padding:40px;color:var(--danger);">
+                    <i class="fas fa-exclamation-triangle" style="font-size:30px;display:block;margin-bottom:10px;"></i>
+                    <strong>خطأ في تحميل البيانات</strong><br>
+                    <small style="color:var(--gray);">${error.message}</small><br><br>
+                    <button onclick="loadData()" style="padding:8px 20px;background:var(--primary-blue);color:white;border:none;border-radius:8px;cursor:pointer;font-family:inherit;">
+                        <i class="fas fa-redo"></i> إعادة المحاولة
+                    </button>
+                </td></tr>`;
         }
+
         showLoading(false);
     }
 
+    // =================== POPULATE FILTERS ===================
+
+    function populateFilters() {
+        const deptSel = document.getElementById('deptFilter');
+        const courseSel = document.getElementById('courseFilter');
+        const floorSel = document.getElementById('floorFilter');
+
+        deptSel.innerHTML = '<option value="all">الكل</option>';
+        allDepts.forEach(d => {
+            deptSel.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+        });
+
+        courseSel.innerHTML = '<option value="all">الكل</option>';
+        allCourses.forEach(c => {
+            courseSel.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+        });
+
+        floorSel.innerHTML = '<option value="all">الكل</option>';
+        allFloors.forEach(f => {
+            floorSel.innerHTML += `<option value="${f.id}">${f.name}</option>`;
+        });
+    }
+
+    window.clearFilters = function() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('deptFilter').value = 'all';
+        document.getElementById('courseFilter').value = 'all';
+        document.getElementById('floorFilter').value = 'all';
+        document.getElementById('statusFilter').value = 'all';
+        filterAndRender();
+    };
+
+    // =================== STATS ===================
+
     function updateStats() {
         let totalPaid = 0, totalRemaining = 0, overdueCount = 0;
-        const seen = new Set();
+
+        // Get latest remaining per student-level combo
+        const latestMap = {};
         allPayments.forEach(p => {
+            const key = `${p.studentId}_${p.levelNumber}_${p.paymentType}`;
             totalPaid += parseFloat(p.amountPaid) || 0;
-            // For remaining, count per student-level combo (last remaining)
-            const key = `${p.studentId}-${p.levelNumber}`;
-            seen.add(key);
-        });
-        // Calculate total remaining per student-level
-        const latestRemaining = {};
-        allPayments.forEach(p => {
-            const key = `${p.studentId}-${p.levelNumber}`;
-            if (!latestRemaining[key] || p.id > latestRemaining[key].id) {
-                latestRemaining[key] = p;
+            if (!latestMap[key] || (p.id > latestMap[key].id)) {
+                latestMap[key] = p;
             }
         });
-        Object.values(latestRemaining).forEach(p => {
+        Object.values(latestMap).forEach(p => {
             const r = parseFloat(p.remainingBalance) || 0;
             totalRemaining += r;
             if (r > 0) overdueCount++;
         });
 
-        document.getElementById('totalPaid').textContent = totalPaid.toLocaleString() + ' ج.م';
-        document.getElementById('totalRemaining').textContent = totalRemaining.toLocaleString() + ' ج.م';
+        document.getElementById('totalPaid').textContent = totalPaid.toLocaleString('ar-EG') + ' ج.م';
+        document.getElementById('totalRemaining').textContent = totalRemaining.toLocaleString('ar-EG') + ' ج.م';
         document.getElementById('totalStudents').textContent = allStudents.length;
         document.getElementById('overdueCount').textContent = overdueCount;
     }
@@ -971,165 +678,197 @@
     function updateCharts() {
         let paid = 0, remaining = 0;
         allPayments.forEach(p => { paid += parseFloat(p.amountPaid)||0; remaining += parseFloat(p.remainingBalance)||0; });
-        
+
         const ctx1 = document.getElementById('paymentChart');
-        if (!ctx1) return;
         if (paymentChart) paymentChart.destroy();
         paymentChart = new Chart(ctx1.getContext('2d'), {
             type: 'doughnut',
-            data: { labels: ['مدفوع', 'متبقي'], datasets: [{ data: [paid, remaining], backgroundColor: ['#2ecc71', '#e74c3c'], borderWidth: 0 }] },
+            data: {
+                labels: ['مدفوع', 'متبقي'],
+                datasets: [{ data: [paid, remaining], backgroundColor: ['#2ecc71', '#e74c3c'], borderWidth: 0 }]
+            },
             options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', rtl: true } } }
         });
 
         const ctx2 = document.getElementById('revenueChart');
-        if (!ctx2) return;
         if (revenueChart) revenueChart.destroy();
+        const months = allPayments.reduce((acc, p) => {
+            if (!p.paymentDate) return acc;
+            const d = new Date(p.paymentDate);
+            if (isNaN(d)) return acc;
+            const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+            acc[key] = (acc[key] || 0) + (parseFloat(p.amountPaid) || 0);
+            return acc;
+        }, {});
+        const sortedKeys = Object.keys(months).sort();
+        const labels = sortedKeys.length > 0 ? sortedKeys : ['لا توجد بيانات'];
+        const values = sortedKeys.length > 0 ? sortedKeys.map(k => months[k]) : [0];
+
         revenueChart = new Chart(ctx2.getContext('2d'), {
             type: 'line',
-            data: { labels: ['يناير','فبراير','مارس','أبريل','مايو','يونيو'], datasets: [{ label: 'الإيرادات', data: [8500,9200,7800,10500,12400,14500], borderColor: '#3c6ec8', tension: 0.3, fill: true, backgroundColor:'rgba(60,110,200,0.08)' }] },
+            data: {
+                labels,
+                datasets: [{ label: 'الإيرادات', data: values, borderColor: '#3c6ec8', tension: 0.3, fill: true, backgroundColor: 'rgba(60,110,200,0.08)', pointBackgroundColor: '#3c6ec8' }]
+            },
             options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } }
         });
     }
 
+    // =================== FILTER & RENDER ===================
+
     function filterAndRender() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+        const searchTerm = (document.getElementById('searchInput').value || '').toLowerCase().trim();
         const statusFilter = document.getElementById('statusFilter').value;
-        const deptFilterVal = document.getElementById('deptFilter')?.value || 'all';
-        const floorFilterVal = document.getElementById('floorFilter')?.value || 'all';
-        
-        // Group payments by student+level+type to show summary rows
+        const deptFilterVal = document.getElementById('deptFilter').value;
+        const courseFilterVal = document.getElementById('courseFilter').value;
+        const floorFilterVal = document.getElementById('floorFilter').value;
+
+        // Group by student + level + type
         const grouped = {};
         allPayments.forEach(p => {
-            const key = `${p.studentId}_${p.levelNumber}_${p.paymentType}`;
+            const key = `${p.studentId}__${p.levelNumber}__${p.paymentType}`;
             if (!grouped[key]) {
-                grouped[key] = { 
-                    ...p, 
-                    allAmounts: [],
-                    totalPaid: 0,
-                    totalDiscount: 0
-                };
+                grouped[key] = { ...p, allAmounts: [], totalPaid: 0, totalDiscount: 0 };
             }
-            grouped[key].allAmounts.push({ amount: parseFloat(p.amountPaid)||0, date: p.paymentDate, id: p.id });
-            // Always take the latest remainingBalance (last record)
-            grouped[key].remainingBalance = parseFloat(p.remainingBalance) || 0;
-            grouped[key].totalLevelFee = parseFloat(p.totalLevelFee) || parseFloat(p.totalFee) || 0;
-            grouped[key].totalPaid = (grouped[key].totalPaid || 0) + (parseFloat(p.amountPaid) || 0);
-            grouped[key].totalDiscount = (grouped[key].totalDiscount || 0) + (parseFloat(p.discountAmount) || 0);
+            grouped[key].allAmounts.push({
+                amount: parseFloat(p.amountPaid) || 0,
+                date: p.paymentDate,
+                id: p.id
+            });
+            grouped[key].totalPaid += parseFloat(p.amountPaid) || 0;
+            grouped[key].totalDiscount += parseFloat(p.discountAmount) || 0;
+            // Always use latest remaining balance
+            if (!grouped[key]._lastId || p.id >= grouped[key]._lastId) {
+                grouped[key]._lastId = p.id;
+                grouped[key].remainingBalance = parseFloat(p.remainingBalance) || 0;
+                grouped[key].totalLevelFee = parseFloat(p.totalLevelFee) || parseFloat(p.totalFee) || 0;
+            }
         });
-        
+
         let rows = Object.values(grouped);
-        
-        // Search filter
+
+        // Search
         if (searchTerm) {
             rows = rows.filter(p => {
-                const s = allStudents.find(st => st.id == p.studentId);
-                return (p.studentName||'').toLowerCase().includes(searchTerm) || 
-                       (s?.code||'').toLowerCase().includes(searchTerm) ||
-                       (s?.name||'').toLowerCase().includes(searchTerm);
+                const s = allStudents.find(st => String(st.id) === String(p.studentId));
+                const name = (p.studentName || s?.name || '').toLowerCase();
+                const code = (s?.code || '').toLowerCase();
+                return name.includes(searchTerm) || code.includes(searchTerm);
             });
         }
 
-        // Dept filter (via student's deptId)
+        // Dept filter
         if (deptFilterVal !== 'all') {
             rows = rows.filter(p => {
-                const s = allStudents.find(st => st.id == p.studentId);
+                const s = allStudents.find(st => String(st.id) === String(p.studentId));
                 return s && String(s.deptId) === String(deptFilterVal);
             });
         }
 
-        // Floor filter (via student's group's hall's floor - simplified: filter by deptId for now)
-        // Note: Floor filtering would need booking data; using group's floor association
-        if (floorFilterVal !== 'all') {
+        // Course filter - via student's group
+        if (courseFilterVal !== 'all') {
             rows = rows.filter(p => {
-                const s = allStudents.find(st => st.id == p.studentId);
+                const s = allStudents.find(st => String(st.id) === String(p.studentId));
                 if (!s || !s.groupId) return false;
-                // For now keep all - floor data not directly in payments
-                return true;
+                const g = allGroups.find(gr => String(gr.id) === String(s.groupId));
+                return g && String(g.courseId) === String(courseFilterVal);
             });
         }
 
+        // Floor filter - skipped for now (no direct link)
+
         // Status filter
         if (statusFilter === 'paid') {
-            rows = rows.filter(p => parseFloat(p.remainingBalance) === 0 && p.totalPaid > 0);
+            rows = rows.filter(p => p.totalPaid > 0 && parseFloat(p.remainingBalance) === 0);
         } else if (statusFilter === 'partial') {
             rows = rows.filter(p => p.totalPaid > 0 && parseFloat(p.remainingBalance) > 0);
         } else if (statusFilter === 'unpaid') {
             rows = rows.filter(p => p.totalPaid <= 0);
         }
-        
+
         renderTable(rows);
     }
 
     function renderTable(rows) {
         const tbody = document.getElementById('paymentsTableBody');
         if (!rows || rows.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:40px;color:var(--gray)"><i class="fas fa-inbox" style="font-size:40px;display:block;margin-bottom:10px;opacity:0.3;"></i>لا توجد مدفوعات</td></tr>';
+            tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;padding:50px;color:var(--gray);">
+                <i class="fas fa-inbox" style="font-size:40px;opacity:0.25;display:block;margin-bottom:10px;"></i>
+                لا توجد مدفوعات
+            </td></tr>`;
             return;
         }
-        
+
         tbody.innerHTML = rows.map(p => {
-            const student = allStudents.find(s => s.id == p.studentId);
+            const student = allStudents.find(s => String(s.id) === String(p.studentId));
+            const group = student?.groupId ? allGroups.find(g => String(g.id) === String(student.groupId)) : null;
+            const courseName = group?.courseName || group?.name || '-';
+
             const remaining = parseFloat(p.remainingBalance) || 0;
             const paid = p.totalPaid || 0;
             const totalFee = parseFloat(p.totalLevelFee) || parseFloat(p.totalFee) || 0;
+            const discountTotal = p.totalDiscount || 0;
 
-            // Determine status correctly
-            let status, statusClass;
+            let statusLabel, statusClass;
             if (paid > 0 && remaining === 0) {
-                status = 'مدفوع بالكامل';
-                statusClass = 'status-paid';
+                statusLabel = 'مدفوع بالكامل'; statusClass = 'status-paid';
             } else if (paid > 0 && remaining > 0) {
-                status = 'جزئي';
-                statusClass = 'status-partial';
+                statusLabel = 'جزئي'; statusClass = 'status-partial';
             } else {
-                status = 'غير مدفوع';
-                statusClass = 'status-unpaid';
+                statusLabel = 'غير مدفوع'; statusClass = 'status-unpaid';
             }
 
-            const latestDate = p.allAmounts && p.allAmounts.length > 0 
-                ? p.allAmounts[p.allAmounts.length-1].date 
-                : p.paymentDate;
             let dateStr = '-';
-            if (latestDate) {
-                try { dateStr = new Date(latestDate).toLocaleDateString('ar-EG'); } catch(e) { dateStr = latestDate; }
-            }
-            const payType = p.paymentType === 'Course Payment' ? '<span style="color:#3c6ec8;"><i class="fas fa-graduation-cap"></i> كورس</span>' 
-                          : p.paymentType === 'AddOn Payment' ? '<span style="color:#f4a261;"><i class="fas fa-plus-circle"></i> إضافة</span>' 
-                          : (p.paymentType || '-');
-            
-            // Show payment breakdown if multiple payments
-            let paidDisplay = paid.toLocaleString() + ' ج.م';
-            if (p.allAmounts && p.allAmounts.length > 1) {
-                const breakdown = p.allAmounts.map(a => a.amount.toLocaleString() + ' ج.م').join(' + ');
-                paidDisplay = `<span title="${breakdown}" style="cursor:help">${paid.toLocaleString()} ج.م <small style="color:#3c6ec8;font-weight:700;">(${p.allAmounts.length} دفعات)</small></span>`;
+            if (p.allAmounts && p.allAmounts.length > 0) {
+                const lastDate = p.allAmounts[p.allAmounts.length - 1].date;
+                if (lastDate) {
+                    try { dateStr = new Date(lastDate).toLocaleDateString('ar-EG'); } catch(e) { dateStr = lastDate; }
+                }
             }
 
-            const discountTotal = p.totalDiscount || (parseFloat(p.discountAmount)||0);
-            
-            return `
-                <tr>
-                    <td><strong>${p.studentName || student?.name || '-'}</strong></td>
-                    <td><code style="background:#f0f4ff;padding:2px 8px;border-radius:6px;font-size:12px;">${student?.code || '-'}</code></td>
-                    <td><span style="background:#e8f0fe;color:#1a2a6c;padding:3px 10px;border-radius:10px;font-weight:700;">L${p.levelNumber || 1}</span></td>
-                    <td>${payType}</td>
-                    <td style="color:var(--success);font-weight:700;">${paidDisplay}</td>
-                    <td>${discountTotal > 0 ? '<span style="color:#e74c3c;">-' + discountTotal.toLocaleString() + ' ج.م</span>' : '-'}</td>
-                    <td>${totalFee > 0 ? totalFee.toLocaleString() + ' ج.م' : '-'}</td>
-                    <td style="font-weight:700;color:${remaining > 0 ? 'var(--danger)' : 'var(--success)'}">${remaining > 0 ? remaining.toLocaleString() + ' ج.م' : '<i class="fas fa-check-circle"></i> مسدد'}</td>
-                    <td><span class="status-badge ${statusClass}">${status}</span></td>
-                    <td style="font-size:12px;color:var(--gray);">${p.notes || '-'}</td>
-                    <td style="font-size:12px;">${dateStr}</td>
-                    <td class="action-buttons">
-                        <button class="btn-icon btn-delete" onclick="deletePaymentById(${p.id})" title="حذف آخر دفعة"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-            `;
+            const payTypeIcon = p.paymentType === 'Course Payment'
+                ? `<span style="color:var(--primary-blue);"><i class="fas fa-graduation-cap"></i> كورس</span>`
+                : p.paymentType === 'AddOn Payment'
+                ? `<span style="color:var(--gold);"><i class="fas fa-plus-circle"></i> إضافة</span>`
+                : (p.paymentType || '-');
+
+            let paidDisplay = `<strong>${paid.toLocaleString('ar-EG')}</strong> ج.م`;
+            if (p.allAmounts && p.allAmounts.length > 1) {
+                const breakdown = p.allAmounts.map(a => a.amount.toLocaleString('ar-EG') + ' ج.م').join(' + ');
+                paidDisplay = `<span title="${breakdown}" style="cursor:help;border-bottom:1px dashed var(--primary-blue);">
+                    <strong>${paid.toLocaleString('ar-EG')}</strong> ج.م
+                    <small style="color:var(--primary-blue);font-weight:700;">(${p.allAmounts.length} دفعات)</small>
+                </span>`;
+            }
+
+            return `<tr>
+                <td><strong style="color:var(--dark-blue);">${p.studentName || student?.name || '-'}</strong></td>
+                <td><code style="background:#f0f4ff;padding:2px 7px;border-radius:5px;font-size:11px;">${student?.code || '-'}</code></td>
+                <td style="font-size:12px;color:var(--gray);">${courseName}</td>
+                <td><span style="background:#e8f0fe;color:var(--dark-blue);padding:3px 10px;border-radius:10px;font-weight:800;font-size:13px;">L${p.levelNumber || 1}</span></td>
+                <td>${payTypeIcon}</td>
+                <td style="color:var(--success);font-weight:600;">${paidDisplay}</td>
+                <td style="color:var(--danger);">${discountTotal > 0 ? '-' + discountTotal.toLocaleString('ar-EG') + ' ج.م' : '-'}</td>
+                <td style="color:var(--gray);">${totalFee > 0 ? totalFee.toLocaleString('ar-EG') + ' ج.م' : '-'}</td>
+                <td style="font-weight:700;color:${remaining > 0 ? 'var(--danger)' : 'var(--success)'};">
+                    ${remaining > 0 ? remaining.toLocaleString('ar-EG') + ' ج.م' : '<i class="fas fa-check-circle"></i> مسدد'}
+                </td>
+                <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+                <td style="font-size:12px;color:var(--gray);">${dateStr}</td>
+                <td class="action-buttons">
+                    <button class="btn-icon btn-delete" onclick="deletePaymentById(${p.id})" title="حذف"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>`;
         }).join('');
     }
 
     // =================== MODAL FLOW ===================
 
     function openAddPaymentModal() {
+        if (allStudents.length === 0) {
+            showToast('لا يوجد طلاب في النظام', 'warning');
+            return;
+        }
         resetModal();
         document.getElementById('paymentModal').classList.add('show');
     }
@@ -1139,102 +878,143 @@
         selectedLevelNumber = null;
         selectedAddonId = null;
         paymentCategory = null;
-        
-        document.getElementById('step1').style.display = 'block';
-        document.getElementById('step2').style.display = 'none';
-        document.getElementById('step3Level').style.display = 'none';
-        document.getElementById('step3Addon').style.display = 'none';
+        currentStep = 1;
+
+        show('step1'); hide('step2'); hide('step3Level'); hide('step3Addon');
         document.getElementById('backBtn').style.display = 'none';
         document.getElementById('savePayment').style.display = 'none';
         document.getElementById('studentSearchInput').value = '';
-        document.getElementById('studentResults').innerHTML = '<div style="padding:15px;text-align:center;color:gray">ابحث باسم الطالب أو الكود...</div>';
+        document.getElementById('studentResults').innerHTML =
+            `<div style="padding:20px;text-align:center;color:var(--gray);">
+                <i class="fas fa-search" style="font-size:30px;opacity:0.3;display:block;margin-bottom:8px;"></i>
+                ابحث باسم الطالب أو الكود
+            </div>`;
+        updateStepIndicator(1);
     }
 
     function closeModal() {
         document.getElementById('paymentModal').classList.remove('show');
     }
 
+    function show(id) { const el = document.getElementById(id); if(el) el.style.display = 'block'; }
+    function hide(id) { const el = document.getElementById(id); if(el) el.style.display = 'none'; }
+
+    function updateStepIndicator(step) {
+        for (let i = 1; i <= 3; i++) {
+            const dot = document.getElementById(`step-dot-${i}`);
+            if (!dot) continue;
+            dot.className = 'step-dot ' + (i < step ? 'done' : i === step ? 'active' : 'inactive');
+        }
+        const line1 = document.getElementById('step-line-1');
+        const line2 = document.getElementById('step-line-2');
+        if (line1) line1.className = 'step-line' + (step > 1 ? ' done' : '');
+        if (line2) line2.className = 'step-line' + (step > 2 ? ' done' : '');
+    }
+
     window.goBack = function() {
         if (paymentCategory !== null) {
-            // Go back to category selection
             paymentCategory = null;
-            document.getElementById('step3Level').style.display = 'none';
-            document.getElementById('step3Addon').style.display = 'none';
-            document.getElementById('step2').style.display = 'block';
+            selectedLevelNumber = null;
+            selectedAddonId = null;
+            hide('step3Level'); hide('step3Addon');
+            show('step2');
             document.getElementById('savePayment').style.display = 'none';
+            updateStepIndicator(2);
         } else {
-            // Go back to student search
-            document.getElementById('step2').style.display = 'none';
-            document.getElementById('step1').style.display = 'block';
+            hide('step2');
+            show('step1');
             document.getElementById('backBtn').style.display = 'none';
             selectedStudentId = null;
+            updateStepIndicator(1);
         }
     };
 
     function searchStudents(query) {
         const results = document.getElementById('studentResults');
-        if (!query.trim()) {
-            results.innerHTML = '<div style="padding:15px;text-align:center;color:gray">ابحث باسم الطالب أو الكود...</div>';
+        query = (query || '').trim();
+        if (!query) {
+            results.innerHTML = `<div style="padding:20px;text-align:center;color:var(--gray);">
+                <i class="fas fa-search" style="font-size:30px;opacity:0.3;display:block;margin-bottom:8px;"></i>
+                ابحث باسم الطالب أو الكود
+            </div>`;
             return;
         }
-        const filtered = allStudents.filter(s => 
-            (s.name||'').toLowerCase().includes(query.toLowerCase()) || 
-            (s.code||'').toLowerCase().includes(query.toLowerCase())
+        const q = query.toLowerCase();
+        const filtered = allStudents.filter(s =>
+            (s.name||'').toLowerCase().includes(q) ||
+            (s.code||'').toLowerCase().includes(q)
         );
-        if (!filtered.length) { results.innerHTML = '<div style="padding:15px;text-align:center;color:gray">لا توجد نتائج</div>'; return; }
-        results.innerHTML = filtered.map(s => `
-            <div onclick="selectStudent(${s.id})" style="padding:12px 15px;cursor:pointer;border:1px solid #e9ecef;border-radius:10px;margin-bottom:8px;transition:all 0.15s;background:white;" onmouseover="this.style.background='#f0f4ff';this.style.borderColor='#3c6ec8'" onmouseout="this.style.background='white';this.style.borderColor='#e9ecef'">
-                <div style="font-weight:700;color:#1a2a6c;">${s.name}</div>
-                <div style="font-size:12px;color:#666;">${s.code || ''}</div>
-            </div>
-        `).join('');
+        if (!filtered.length) {
+            results.innerHTML = `<div style="padding:20px;text-align:center;color:var(--gray);">لا توجد نتائج لـ "${query}"</div>`;
+            return;
+        }
+        results.innerHTML = filtered.map(s => {
+            const group = s.groupId ? allGroups.find(g => String(g.id) === String(s.groupId)) : null;
+            const groupName = group?.name || group?.courseName || '';
+            return `<div class="student-result-item" onclick="selectStudent(${s.id})">
+                <div class="student-result-name">${s.name}</div>
+                <div class="student-result-meta">
+                    <span style="color:var(--primary-blue);">${s.code || ''}</span>
+                    ${groupName ? `<span style="margin-right:8px;color:var(--gray);">• ${groupName}</span>` : ''}
+                </div>
+            </div>`;
+        }).join('');
     }
 
     window.selectStudent = function(id) {
-        const student = allStudents.find(s => s.id == id);
+        const student = allStudents.find(s => String(s.id) === String(id));
         if (!student) return;
         selectedStudentId = id;
 
-        // Show step 2
-        document.getElementById('step1').style.display = 'none';
-        document.getElementById('step2').style.display = 'block';
-        document.getElementById('backBtn').style.display = 'inline-block';
-        
-        // Find course info
-        let courseName = '-';
+        hide('step1');
+        show('step2');
+        document.getElementById('backBtn').style.display = 'inline-flex';
+        updateStepIndicator(2);
+
+        let courseName = 'غير محدد';
         if (student.groupId) {
-            const group = allGroups.find(g => g.id == student.groupId);
-            if (group) courseName = group.courseName || group.name;
+            const group = allGroups.find(g => String(g.id) === String(student.groupId));
+            if (group) courseName = group.courseName || group.name || courseName;
         }
-        document.getElementById('selectedStudentDisplay').textContent = `${student.name} (${student.code || ''})`;
-        document.getElementById('selectedStudentCourse').textContent = `الكورس: ${courseName}`;
+        document.getElementById('selectedStudentDisplay').textContent = `${student.name}  ${student.code ? '(' + student.code + ')' : ''}`;
+        document.getElementById('selectedStudentCourse').innerHTML = `<i class="fas fa-book-open"></i> الكورس: ${courseName}`;
     };
 
     window.choosePaymentCategory = function(cat) {
         paymentCategory = cat;
-        document.getElementById('step2').style.display = 'none';
-        document.getElementById('btnPayLevel').classList.remove('selected');
-        document.getElementById('btnPayAddon').classList.remove('selected');
+        hide('step2');
+        updateStepIndicator(3);
 
         if (cat === 'level') {
-            document.getElementById('step3Level').style.display = 'block';
+            show('step3Level');
+            const student = allStudents.find(s => String(s.id) === String(selectedStudentId));
+            if (student) {
+                document.getElementById('studentInfoBar2').textContent = `${student.name}  ${student.code ? '(' + student.code + ')' : ''}`;
+            }
             buildLevelButtons();
         } else {
-            document.getElementById('step3Addon').style.display = 'block';
+            show('step3Addon');
+            const student = allStudents.find(s => String(s.id) === String(selectedStudentId));
+            if (student) {
+                document.getElementById('studentInfoBar3').textContent = `${student.name}  ${student.code ? '(' + student.code + ')' : ''}`;
+            }
             buildAddonList();
         }
     };
 
+    // =================== LEVEL BUTTONS ===================
+
     function buildLevelButtons() {
-        const student = allStudents.find(s => s.id == selectedStudentId);
+        const student = allStudents.find(s => String(s.id) === String(selectedStudentId));
         if (!student) return;
-        
+
         let totalLevels = 1;
         let pricePerLevel = 0;
+
         if (student.groupId) {
-            const group = allGroups.find(g => g.id == student.groupId);
+            const group = allGroups.find(g => String(g.id) === String(student.groupId));
             if (group) {
-                const course = allCourses.find(c => c.id == group.courseId);
+                const course = allCourses.find(c => String(c.id) === String(group.courseId));
                 if (course) {
                     totalLevels = parseInt(course.durationLevels) || parseInt(group.levelCount) || 1;
                     pricePerLevel = parseFloat(course.pricePerLevel) || 0;
@@ -1243,266 +1023,280 @@
         }
 
         const container = document.getElementById('levelButtons');
-        container.innerHTML = '';
-        
-        if (totalLevels === 0) {
-            container.innerHTML = '<div style="color:#999;padding:10px;">لا توجد مستويات مرتبطة بهذا الطالب</div>';
+        hide('levelPaymentDetails');
+        hide('levelPayForm');
+
+        if (totalLevels === 0 || totalLevels > 20) {
+            container.innerHTML = `<div style="color:var(--gray);padding:10px;text-align:center;">
+                لا توجد مستويات محددة لهذا الطالب
+            </div>`;
             return;
         }
 
+        container.innerHTML = '';
+
         for (let i = 1; i <= totalLevels; i++) {
-            // Get all payments for this level
-            const levelPayments = allPayments.filter(p => 
-                p.studentId == selectedStudentId && 
-                p.levelNumber == i && 
+            const levelPayments = allPayments.filter(p =>
+                String(p.studentId) === String(selectedStudentId) &&
+                String(p.levelNumber) === String(i) &&
                 p.paymentType === 'Course Payment'
             );
             const totalPaid = levelPayments.reduce((sum, p) => sum + (parseFloat(p.amountPaid)||0), 0);
             const totalDiscount = levelPayments.reduce((sum, p) => sum + (parseFloat(p.discountAmount)||0), 0);
-            
-            // Use stored totalLevelFee if available (from existing payments)
-            const storedFee = levelPayments.length > 0 
+            const storedFee = levelPayments.length > 0
                 ? (parseFloat(levelPayments[0].totalLevelFee) || parseFloat(levelPayments[0].totalFee) || pricePerLevel)
                 : pricePerLevel;
-            
             const remaining = Math.max(0, storedFee - totalPaid - totalDiscount);
-            const isPaid = remaining === 0 && totalPaid > 0;
+            const isPaid = totalPaid > 0 && remaining === 0;
             const isPartial = totalPaid > 0 && remaining > 0;
-            const hasPayment = totalPaid > 0 || totalDiscount > 0;
 
             let bg, border, badge;
             if (isPaid) {
                 bg = '#e8f5e9'; border = '#4caf50';
-                badge = '<span style="color:#2e7d32;font-size:11px;display:block;margin-top:4px;"><i class="fas fa-check-circle"></i> مدفوع بالكامل</span>';
+                badge = `<div style="color:#2e7d32;font-size:11px;margin-top:5px;"><i class="fas fa-check-circle"></i> مدفوع</div>`;
             } else if (isPartial) {
                 bg = '#fff3e0'; border = '#ff9800';
-                badge = `<span style="color:#e65100;font-size:11px;display:block;margin-top:4px;"><i class="fas fa-exclamation-circle"></i> متبقي: ${remaining.toLocaleString()} ج.م</span>`;
+                badge = `<div style="color:#e65100;font-size:11px;margin-top:5px;"><i class="fas fa-exclamation-circle"></i> متبقي ${remaining.toLocaleString()}</div>`;
             } else {
-                bg = 'white'; border = '#e9ecef';
-                badge = '<span style="color:#c62828;font-size:11px;display:block;margin-top:4px;"><i class="fas fa-times-circle"></i> لم يُدفع بعد</span>';
+                bg = 'white'; border = '#dee2e6';
+                badge = `<div style="color:#c62828;font-size:11px;margin-top:5px;"><i class="fas fa-times-circle"></i> لم يُدفع</div>`;
             }
 
-            container.innerHTML += `
-                <div onclick="selectLevel(${i}, ${storedFee})" 
-                     style="flex:1;min-width:90px;max-width:130px;padding:14px;border:2px solid ${border};border-radius:12px;cursor:pointer;text-align:center;background:${bg};transition:all 0.2s;" 
-                     onmouseover="this.style.transform='scale(1.06)';this.style.boxShadow='0 4px 15px rgba(0,0,0,0.1)'" 
-                     onmouseout="this.style.transform='scale(1)';this.style.boxShadow='none'">
-                    <div style="font-weight:800;font-size:18px;color:#1a2a6c;">L${i}</div>
-                    <div style="font-size:12px;color:#666;margin:4px 0;">${storedFee > 0 ? storedFee.toLocaleString() + ' ج.م' : 'غير محدد'}</div>
-                    ${hasPayment ? `<div style="font-size:11px;color:var(--success);font-weight:600;">مدفوع: ${totalPaid.toLocaleString()}</div>` : ''}
-                    ${badge}
-                </div>
+            const btn = document.createElement('div');
+            btn.className = 'level-btn';
+            btn.style.cssText = `border-color:${border};background:${bg};`;
+            btn.innerHTML = `
+                <div style="font-weight:800;font-size:18px;color:var(--dark-blue);">L${i}</div>
+                <div style="font-size:12px;color:var(--gray);margin:3px 0;">${storedFee > 0 ? storedFee.toLocaleString() + ' ج.م' : 'غير محدد'}</div>
+                ${totalPaid > 0 ? `<div style="font-size:11px;color:var(--success);font-weight:700;">✓ ${totalPaid.toLocaleString()} ج.م</div>` : ''}
+                ${badge}
             `;
+            btn.onclick = () => selectLevel(i, storedFee || pricePerLevel);
+            container.appendChild(btn);
         }
     }
 
     window.selectLevel = function(levelNum, pricePerLevel) {
         selectedLevelNumber = levelNum;
-        
-        const levelPayments = allPayments.filter(p => 
-            p.studentId == selectedStudentId && 
-            p.levelNumber == levelNum && 
+
+        // Highlight selected
+        document.querySelectorAll('.level-btn').forEach(b => b.style.boxShadow = '');
+        event && event.currentTarget && (event.currentTarget.style.boxShadow = '0 0 0 3px var(--primary-blue)');
+
+        const levelPayments = allPayments.filter(p =>
+            String(p.studentId) === String(selectedStudentId) &&
+            String(p.levelNumber) === String(levelNum) &&
             p.paymentType === 'Course Payment'
         );
         const totalPaid = levelPayments.reduce((sum, p) => sum + (parseFloat(p.amountPaid)||0), 0);
         const totalDiscount = levelPayments.reduce((sum, p) => sum + (parseFloat(p.discountAmount)||0), 0);
-        
-        // Use stored fee from DB if available, otherwise use course price
-        const storedFee = levelPayments.length > 0 
+        const storedFee = levelPayments.length > 0
             ? (parseFloat(levelPayments[0].totalLevelFee) || parseFloat(levelPayments[0].totalFee) || pricePerLevel)
             : pricePerLevel;
-        
         const remaining = Math.max(0, storedFee - totalPaid - totalDiscount);
-        const isPaid = remaining === 0 && totalPaid > 0;
+        const isPaid = totalPaid > 0 && remaining === 0;
 
         const details = document.getElementById('levelPaymentDetails');
-        const banner = document.getElementById('levelStatusBanner');
+        const banner  = document.getElementById('levelStatusBanner');
         const history = document.getElementById('levelPayHistory');
-        const form = document.getElementById('levelPayForm');
+        const form    = document.getElementById('levelPayForm');
 
         details.style.display = 'block';
 
         if (isPaid) {
-            banner.style.background = '#e8f5e9';
-            banner.style.color = '#2e7d32';
-            banner.innerHTML = '<i class="fas fa-check-circle"></i> هذا المستوى مدفوع بالكامل ✅';
-            document.getElementById('savePayment').style.display = 'none';
+            banner.style.cssText = 'padding:12px;border-radius:8px;background:#e8f5e9;color:#2e7d32;text-align:center;font-weight:700;margin-bottom:12px;';
+            banner.innerHTML = `<i class="fas fa-check-circle" style="font-size:20px;"></i><br>هذا المستوى مدفوع بالكامل ✅<br><small>إجمالي المدفوع: ${totalPaid.toLocaleString()} ج.م</small>`;
             form.style.display = 'none';
+            document.getElementById('savePayment').style.display = 'none';
         } else {
             if (totalPaid === 0 && totalDiscount === 0) {
-                banner.style.background = '#fdecea';
-                banner.style.color = '#c62828';
-                banner.innerHTML = `<i class="fas fa-times-circle"></i> لم يتم الدفع بعد - المطلوب: <strong>${storedFee.toLocaleString()} ج.م</strong>`;
+                banner.style.cssText = 'padding:12px;border-radius:8px;background:#fdecea;color:#c62828;text-align:center;font-weight:700;margin-bottom:12px;';
+                banner.innerHTML = `<i class="fas fa-times-circle"></i> لم يتم الدفع بعد<br><small>المطلوب: <strong>${storedFee.toLocaleString()} ج.م</strong></small>`;
             } else {
-                banner.style.background = '#fff3e0';
-                banner.style.color = '#e65100';
-                banner.innerHTML = `<i class="fas fa-exclamation-circle"></i> دفع جزئي - تم دفع <strong>${totalPaid.toLocaleString()} ج.م</strong> - المتبقي: <strong>${remaining.toLocaleString()} ج.م</strong>`;
+                banner.style.cssText = 'padding:12px;border-radius:8px;background:#fff3e0;color:#e65100;text-align:center;font-weight:700;margin-bottom:12px;';
+                banner.innerHTML = `<i class="fas fa-exclamation-circle"></i> دفع جزئي<br>
+                    <small>تم دفع <strong>${totalPaid.toLocaleString()} ج.م</strong> • المتبقي: <strong style="color:#c62828;">${remaining.toLocaleString()} ج.م</strong></small>`;
             }
             form.style.display = 'block';
-            document.getElementById('totalLevelFee').value = storedFee || pricePerLevel;
+            document.getElementById('totalLevelFee').value = storedFee || pricePerLevel || '';
             document.getElementById('amountPaid').value = '';
             document.getElementById('discountAmount').value = '0';
             document.getElementById('notes').value = '';
-            // Reset pay mode
             document.querySelectorAll('input[name="payMode"]').forEach(r => r.checked = false);
             document.getElementById('paymentDate').valueAsDate = new Date();
-            document.getElementById('savePayment').style.display = 'inline-block';
-            updateRemainingPreview();
+            document.getElementById('savePayment').style.display = 'inline-flex';
+            document.getElementById('remainingPreview').style.display = 'none';
         }
 
+        // History table
         if (levelPayments.length > 0) {
             history.innerHTML = `
-                <div style="font-weight:700;margin-bottom:8px;color:#1a2a6c;">📋 سجل الدفعات السابقة للمستوى ${levelNum}:</div>
+                <div style="font-weight:700;margin-bottom:8px;color:var(--dark-blue);font-size:13px;">
+                    <i class="fas fa-history"></i> سجل الدفعات للمستوى ${levelNum}:
+                </div>
                 <table style="width:100%;border-collapse:collapse;font-size:12px;">
-                    <tr style="background:#1a2a6c;color:white;">
-                        <th style="padding:8px;border:1px solid #dee2e6;">#</th>
-                        <th style="padding:8px;border:1px solid #dee2e6;">التاريخ</th>
-                        <th style="padding:8px;border:1px solid #dee2e6;">المبلغ المدفوع</th>
-                        <th style="padding:8px;border:1px solid #dee2e6;">خصم</th>
-                        <th style="padding:8px;border:1px solid #dee2e6;">المتبقي بعدها</th>
+                    <tr style="background:var(--dark-blue);color:white;">
+                        <th style="padding:7px;border:1px solid #dee2e6;">#</th>
+                        <th style="padding:7px;border:1px solid #dee2e6;">التاريخ</th>
+                        <th style="padding:7px;border:1px solid #dee2e6;">المبلغ</th>
+                        <th style="padding:7px;border:1px solid #dee2e6;">خصم</th>
+                        <th style="padding:7px;border:1px solid #dee2e6;">المتبقي</th>
                     </tr>
                     ${levelPayments.map((p, idx) => `
-                        <tr style="background:${idx % 2 === 0 ? 'white' : '#f8f9fa'}">
-                            <td style="padding:6px;border:1px solid #dee2e6;text-align:center;font-weight:700;">${idx+1}</td>
-                            <td style="padding:6px;border:1px solid #dee2e6;">${p.paymentDate ? p.paymentDate : '-'}</td>
-                            <td style="padding:6px;border:1px solid #dee2e6;font-weight:bold;color:var(--success);">${(parseFloat(p.amountPaid)||0).toLocaleString()} ج.م</td>
-                            <td style="padding:6px;border:1px solid #dee2e6;color:#e74c3c;">${(parseFloat(p.discountAmount)||0) > 0 ? '-' + (parseFloat(p.discountAmount)||0).toLocaleString() + ' ج.م' : '-'}</td>
-                            <td style="padding:6px;border:1px solid #dee2e6;color:${parseFloat(p.remainingBalance) > 0 ? '#e74c3c' : '#2ecc71'};font-weight:700;">${(parseFloat(p.remainingBalance)||0).toLocaleString()} ج.م</td>
+                        <tr style="background:${idx%2===0?'white':'#f8f9fa'}">
+                            <td style="padding:6px;border:1px solid #e9ecef;text-align:center;font-weight:700;">${idx+1}</td>
+                            <td style="padding:6px;border:1px solid #e9ecef;">${p.paymentDate || '-'}</td>
+                            <td style="padding:6px;border:1px solid #e9ecef;color:var(--success);font-weight:700;">${(parseFloat(p.amountPaid)||0).toLocaleString()} ج.م</td>
+                            <td style="padding:6px;border:1px solid #e9ecef;color:var(--danger);">${parseFloat(p.discountAmount)>0 ? '-'+(parseFloat(p.discountAmount)).toLocaleString()+' ج.م' : '-'}</td>
+                            <td style="padding:6px;border:1px solid #e9ecef;font-weight:700;color:${parseFloat(p.remainingBalance)>0?'var(--danger)':'var(--success)'};">${(parseFloat(p.remainingBalance)||0).toLocaleString()} ج.م</td>
                         </tr>
                     `).join('')}
-                    <tr style="background:#e8f5e9;font-weight:bold;">
-                        <td colspan="2" style="padding:8px;border:1px solid #dee2e6;">الإجمالي المدفوع</td>
-                        <td style="padding:8px;border:1px solid #dee2e6;color:var(--success);font-size:14px;">${totalPaid.toLocaleString()} ج.م</td>
-                        <td style="padding:8px;border:1px solid #dee2e6;color:#e74c3c;">${totalDiscount > 0 ? '-' + totalDiscount.toLocaleString() + ' ج.م' : '-'}</td>
-                        <td style="padding:8px;border:1px solid #dee2e6;color:${remaining > 0 ? '#e74c3c' : '#2ecc71'};font-size:14px;">${remaining.toLocaleString()} ج.م</td>
+                    <tr style="background:#e8f5e9;font-weight:800;">
+                        <td colspan="2" style="padding:8px;border:1px solid #dee2e6;">الإجمالي</td>
+                        <td style="padding:8px;border:1px solid #dee2e6;color:var(--success);">${totalPaid.toLocaleString()} ج.م</td>
+                        <td style="padding:8px;border:1px solid #dee2e6;color:var(--danger);">${totalDiscount>0?'-'+totalDiscount.toLocaleString()+' ج.م':'-'}</td>
+                        <td style="padding:8px;border:1px solid #dee2e6;color:${remaining>0?'var(--danger)':'var(--success)'};">${remaining.toLocaleString()} ج.م</td>
                     </tr>
-                </table>
-            `;
+                </table>`;
         } else {
-            history.innerHTML = '<div style="padding:10px;color:#999;text-align:center;">لا توجد دفعات سابقة لهذا المستوى</div>';
+            history.innerHTML = `<div style="padding:10px;text-align:center;color:var(--gray);font-size:13px;">لا توجد دفعات سابقة لهذا المستوى</div>`;
         }
     };
 
     window.onPayModeChange = function() {
         const mode = document.querySelector('input[name="payMode"]:checked')?.value;
-        const totalFee = parseFloat(document.getElementById('totalLevelFee').value) || 0;
+        const totalFeeEl = document.getElementById('totalLevelFee');
+        const amountEl = document.getElementById('amountPaid');
+
+        if (!mode) return;
+
         if (mode === 'full') {
-            document.getElementById('amountPaid').value = totalFee;
-            document.getElementById('amountPaid').readOnly = true;
-            document.getElementById('amountPaid').style.background = '#f0f0f0';
+            // Calculate what's remaining and set that as amount
+            const storedFee = parseFloat(totalFeeEl.value) || 0;
+            const prevPayments = allPayments.filter(p =>
+                String(p.studentId) === String(selectedStudentId) &&
+                String(p.levelNumber) === String(selectedLevelNumber) &&
+                p.paymentType === 'Course Payment'
+            );
+            const prevPaid = prevPayments.reduce((sum, p) => sum + (parseFloat(p.amountPaid)||0), 0);
+            const prevDiscount = prevPayments.reduce((sum, p) => sum + (parseFloat(p.discountAmount)||0), 0);
+            const leftover = Math.max(0, storedFee - prevPaid - prevDiscount);
+            amountEl.value = leftover;
+            amountEl.readOnly = true;
+            amountEl.style.background = '#f0f0f0';
         } else {
-            document.getElementById('amountPaid').readOnly = false;
-            document.getElementById('amountPaid').style.background = '';
-            document.getElementById('amountPaid').value = '';
+            amountEl.readOnly = false;
+            amountEl.style.background = '';
+            amountEl.value = '';
         }
         updateRemainingPreview();
     };
 
     window.updateRemainingPreview = function() {
         const total = parseFloat(document.getElementById('totalLevelFee').value) || 0;
-        const paid = parseFloat(document.getElementById('amountPaid').value) || 0;
-        const discount = parseFloat(document.getElementById('discountAmount').value) || 0;
+        const paid  = parseFloat(document.getElementById('amountPaid').value) || 0;
+        const disc  = parseFloat(document.getElementById('discountAmount').value) || 0;
 
-        // Account for previous payments on this level
-        const prevPayments = allPayments.filter(p => 
-            p.studentId == selectedStudentId && 
-            p.levelNumber == selectedLevelNumber && 
+        const prevPayments = allPayments.filter(p =>
+            String(p.studentId) === String(selectedStudentId) &&
+            String(p.levelNumber) === String(selectedLevelNumber) &&
             p.paymentType === 'Course Payment'
         );
         const prevPaid = prevPayments.reduce((sum, p) => sum + (parseFloat(p.amountPaid)||0), 0);
-        const prevDiscount = prevPayments.reduce((sum, p) => sum + (parseFloat(p.discountAmount)||0), 0);
+        const prevDisc = prevPayments.reduce((sum, p) => sum + (parseFloat(p.discountAmount)||0), 0);
 
-        const newRemaining = Math.max(0, total - prevPaid - prevDiscount - paid - discount);
+        const newRemaining = Math.max(0, total - prevPaid - prevDisc - paid - disc);
         const preview = document.getElementById('remainingPreview');
-        
-        if (paid > 0 || discount > 0) {
+
+        if (paid > 0 || disc > 0) {
             preview.style.display = 'block';
             if (newRemaining === 0) {
-                preview.style.background = '#e8f5e9';
-                preview.style.borderColor = '#4caf50';
-                preview.style.color = '#2e7d32';
-                preview.innerHTML = '<i class="fas fa-check-circle"></i> <strong>سيتم سداد المبلغ بالكامل ✅</strong>';
+                preview.style.cssText = 'display:block;padding:12px;border-radius:10px;text-align:center;font-weight:700;border:2px solid #4caf50;background:#e8f5e9;color:#2e7d32;margin-bottom:12px;';
+                preview.innerHTML = `<i class="fas fa-check-circle"></i> سيتم سداد المبلغ بالكامل ✅`;
             } else {
-                preview.style.background = '#fff3e0';
-                preview.style.borderColor = '#ff9800';
-                preview.style.color = '#e65100';
-                preview.innerHTML = `<i class="fas fa-info-circle"></i> المتبقي بعد هذه الدفعة: <strong>${newRemaining.toLocaleString()} ج.م</strong>`;
+                preview.style.cssText = 'display:block;padding:12px;border-radius:10px;text-align:center;font-weight:700;border:2px solid #ff9800;background:#fff3e0;color:#e65100;margin-bottom:12px;';
+                preview.innerHTML = `<i class="fas fa-info-circle"></i> المتبقي بعد هذه الدفعة: <strong>${newRemaining.toLocaleString('ar-EG')} ج.م</strong>`;
             }
         } else {
             preview.style.display = 'none';
         }
     };
 
+    // =================== ADDON ===================
+
     function buildAddonList() {
-        const student = allStudents.find(s => s.id == selectedStudentId);
-        if (!student) return;
-        
+        const student = allStudents.find(s => String(s.id) === String(selectedStudentId));
         let courseId = null;
-        if (student.groupId) {
-            const group = allGroups.find(g => g.id == student.groupId);
+        if (student?.groupId) {
+            const group = allGroups.find(g => String(g.id) === String(student.groupId));
             if (group) courseId = group.courseId;
         }
 
-        const relevantAddons = allAddOns.filter(a => !a.courseId || a.courseId == courseId);
-        
+        const relevantAddons = allAddOns.filter(a => !a.courseId || !courseId || String(a.courseId) === String(courseId));
+        const container = document.getElementById('addonList');
+
         if (!relevantAddons.length) {
-            document.getElementById('addonList').innerHTML = '<div style="padding:20px;text-align:center;color:gray;">لا توجد إضافات متاحة لهذا الطالب</div>';
+            container.innerHTML = `<div style="padding:20px;text-align:center;color:var(--gray);">لا توجد إضافات متاحة</div>`;
             return;
         }
 
-        document.getElementById('addonList').innerHTML = relevantAddons.map(a => {
-            const alreadyPaid = allPayments.some(p => p.studentId == selectedStudentId && p.levelNumber == a.id && p.paymentType === 'AddOn Payment');
-            const bg = alreadyPaid ? '#f5f5f5' : 'white';
-            const opacity = alreadyPaid ? '0.6' : '1';
-            const cursor = alreadyPaid ? 'not-allowed' : 'pointer';
-            const badge = alreadyPaid ? '<span style="color:#2e7d32;font-size:11px;display:block;margin-top:6px;"><i class="fas fa-check-circle"></i> مدفوع بالفعل</span>' : '';
-            
-            return `
-                <div onclick="${alreadyPaid ? '' : `selectAddon(${a.id}, '${a.name}', ${a.price||0})`}" 
-                     style="flex:1;min-width:140px;padding:15px;border:2px solid ${alreadyPaid ? '#4caf50' : '#e9ecef'};border-radius:12px;cursor:${cursor};text-align:center;background:${bg};opacity:${opacity};transition:all 0.15s;"
-                     ${!alreadyPaid ? 'onmouseover="this.style.borderColor='#3c6ec8';this.style.transform='scale(1.03)'" onmouseout="this.style.borderColor='#e9ecef';this.style.transform='scale(1)'"' : ''}>
-                    <i class="fas fa-puzzle-piece" style="font-size:22px;color:#f4a261;display:block;margin-bottom:8px;"></i>
-                    <div style="font-weight:700;">${a.name}</div>
-                    <div style="color:#3c6ec8;font-weight:700;margin-top:4px;">${(a.price||0).toLocaleString()} ج.م</div>
-                    ${badge}
-                </div>
-            `;
+        container.innerHTML = relevantAddons.map(a => {
+            const alreadyPaid = allPayments.some(p =>
+                String(p.studentId) === String(selectedStudentId) &&
+                String(p.levelNumber) === String(a.id) &&
+                p.paymentType === 'AddOn Payment'
+            );
+            return `<div onclick="${alreadyPaid ? '' : `selectAddon(${a.id}, '${(a.name||'').replace(/'/g,"\\'")}', ${a.price||0})`}"
+                style="flex:1;min-width:140px;padding:15px;border:2px solid ${alreadyPaid?'#4caf50':'#e9ecef'};border-radius:12px;
+                       cursor:${alreadyPaid?'not-allowed':'pointer'};text-align:center;background:${alreadyPaid?'#f5f5f5':'white'};
+                       opacity:${alreadyPaid?'0.7':'1'};transition:all 0.2s;"
+                ${!alreadyPaid ? 'onmouseover="this.style.borderColor=\'#3c6ec8\';this.style.transform=\'scale(1.03)\'" onmouseout="this.style.borderColor=\'#e9ecef\';this.style.transform=\'scale(1)\'"' : ''}>
+                <i class="fas fa-puzzle-piece" style="font-size:22px;color:var(--gold);display:block;margin-bottom:8px;"></i>
+                <div style="font-weight:700;font-size:14px;">${a.name}</div>
+                <div style="color:var(--primary-blue);font-weight:700;margin-top:4px;">${(a.price||0).toLocaleString()} ج.م</div>
+                ${alreadyPaid ? '<div style="color:#2e7d32;font-size:11px;margin-top:5px;"><i class="fas fa-check-circle"></i> مدفوع بالفعل</div>' : ''}
+            </div>`;
         }).join('');
     }
 
     window.selectAddon = function(addonId, addonName, addonPrice) {
         selectedAddonId = addonId;
         document.getElementById('addonPayForm').style.display = 'block';
-        document.getElementById('addonSelectedInfo').innerHTML = `
-            <i class="fas fa-puzzle-piece" style="color:#f4a261;"></i>
-            الإضافة: <strong>${addonName}</strong> - السعر: <strong>${addonPrice.toLocaleString()} ج.م</strong>
-        `;
+        document.getElementById('addonSelectedInfo').innerHTML =
+            `<i class="fas fa-puzzle-piece" style="color:var(--gold);font-size:16px;"></i>
+             الإضافة: <strong>${addonName}</strong>
+             <span style="margin-right:10px;color:var(--primary-blue);">السعر: <strong>${addonPrice.toLocaleString()} ج.م</strong></span>`;
         document.getElementById('addonPaymentDate').valueAsDate = new Date();
-        document.getElementById('savePayment').style.display = 'inline-block';
+        document.getElementById('savePayment').style.display = 'inline-flex';
     };
 
+    // =================== SAVE ===================
+
     async function completePayment() {
-        if (!selectedStudentId) { showToast('يرجى اختيار طالب أولاً', 'warning'); return; }
-        const student = allStudents.find(s => s.id == selectedStudentId);
+        if (!selectedStudentId) { showToast('يرجى اختيار طالب', 'warning'); return; }
+        const student = allStudents.find(s => String(s.id) === String(selectedStudentId));
 
         if (paymentCategory === 'level') {
             if (!selectedLevelNumber) { showToast('يرجى اختيار المستوى', 'warning'); return; }
             const amountPaid = parseFloat(document.getElementById('amountPaid').value) || 0;
-            const totalFee = parseFloat(document.getElementById('totalLevelFee').value) || 0;
-            const discount = parseFloat(document.getElementById('discountAmount').value) || 0;
-            if (amountPaid <= 0 && discount <= 0) { showToast('يرجى إدخال المبلغ المدفوع أو الخصم', 'warning'); return; }
-            if (totalFee <= 0) { showToast('يرجى إدخال إجمالي رسوم المستوى', 'warning'); return; }
+            const totalFee   = parseFloat(document.getElementById('totalLevelFee').value) || 0;
+            const discount   = parseFloat(document.getElementById('discountAmount').value) || 0;
+            const payDate    = document.getElementById('paymentDate').value;
 
-            const prevPayments = allPayments.filter(p => 
-                p.studentId == selectedStudentId && 
-                p.levelNumber == selectedLevelNumber && 
+            if (amountPaid <= 0 && discount <= 0) { showToast('أدخل المبلغ المدفوع أو الخصم', 'warning'); return; }
+            if (totalFee <= 0) { showToast('أدخل إجمالي رسوم المستوى', 'warning'); return; }
+            if (!payDate) { showToast('أدخل تاريخ الدفع', 'warning'); return; }
+
+            const prevPayments = allPayments.filter(p =>
+                String(p.studentId) === String(selectedStudentId) &&
+                String(p.levelNumber) === String(selectedLevelNumber) &&
                 p.paymentType === 'Course Payment'
             );
-            const prevPaid = prevPayments.reduce((sum, p) => sum + (parseFloat(p.amountPaid)||0), 0);
-            const prevDiscount = prevPayments.reduce((sum, p) => sum + (parseFloat(p.discountAmount)||0), 0);
-            const newRemaining = Math.max(0, totalFee - prevPaid - prevDiscount - amountPaid - discount);
+            const prevPaid    = prevPayments.reduce((s, p) => s + (parseFloat(p.amountPaid)||0), 0);
+            const prevDisc    = prevPayments.reduce((s, p) => s + (parseFloat(p.discountAmount)||0), 0);
+            const newRemaining = Math.max(0, totalFee - prevPaid - prevDisc - amountPaid - discount);
 
-            const paymentData = {
+            await doSave({
                 studentId: selectedStudentId,
                 studentName: student?.name || '',
                 levelNumber: selectedLevelNumber,
@@ -1512,54 +1306,59 @@
                 discountAmount: discount,
                 remainingBalance: newRemaining,
                 notes: document.getElementById('notes').value,
-                paymentDate: document.getElementById('paymentDate').value,
+                paymentDate: payDate,
                 createdBy: currentUser.id
-            };
-            await doSave(paymentData);
+            });
 
         } else if (paymentCategory === 'addon') {
             if (!selectedAddonId) { showToast('يرجى اختيار الإضافة', 'warning'); return; }
-            const addon = allAddOns.find(a => a.id == selectedAddonId);
+            const addon = allAddOns.find(a => String(a.id) === String(selectedAddonId));
             if (!addon) { showToast('الإضافة غير موجودة', 'error'); return; }
-            const paymentData = {
+            const payDate = document.getElementById('addonPaymentDate').value;
+            if (!payDate) { showToast('أدخل تاريخ الدفع', 'warning'); return; }
+
+            await doSave({
                 studentId: selectedStudentId,
                 studentName: student?.name || '',
-                levelNumber: selectedAddonId, // use addon id as level number for AddOns
+                levelNumber: selectedAddonId,
                 paymentType: 'AddOn Payment',
                 totalLevelFee: addon.price || 0,
                 amountPaid: addon.price || 0,
                 discountAmount: 0,
                 remainingBalance: 0,
                 notes: document.getElementById('addonNotes').value,
-                paymentDate: document.getElementById('addonPaymentDate').value,
+                paymentDate: payDate,
                 createdBy: currentUser.id
-            };
-            await doSave(paymentData);
+            });
         }
     }
 
     async function doSave(paymentData) {
-        showLoading(true);
+        showLoading(true, 'جاري حفظ الدفعة...');
         try {
             const res = await apiCall('savePayment', { paymentData });
-            showToast(res.message || 'تم تسجيل الدفعة بنجاح ✅', 'success');
+            const msg = (typeof res === 'object' && res.message) ? res.message : 'تم تسجيل الدفعة بنجاح';
+            showToast(msg + ' ✅', 'success');
             closeModal();
-            await loadData(); // reload to refresh all data
+            await loadData();
         } catch(e) {
-            console.error('Save payment error:', e);
-            showToast(e.message || 'حدث خطأ أثناء حفظ الدفعة', 'error');
+            console.error('Save error:', e);
+            showToast('خطأ في الحفظ: ' + e.message, 'error');
         }
         showLoading(false);
     }
 
     window.deletePaymentById = async function(id) {
+        if (!id) return;
         if (!confirm('هل أنت متأكد من حذف هذه الدفعة؟')) return;
-        showLoading(true);
+        showLoading(true, 'جاري الحذف...');
         try {
             await apiCall('deletePayment', { paymentId: id });
             showToast('تم الحذف بنجاح', 'success');
-            loadData();
-        } catch(e) {}
+            await loadData();
+        } catch(e) {
+            showToast('خطأ في الحذف: ' + e.message, 'error');
+        }
         showLoading(false);
     };
 </script>
